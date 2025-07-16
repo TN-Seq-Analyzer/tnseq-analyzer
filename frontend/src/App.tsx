@@ -1,10 +1,13 @@
 import React from 'react'
+import Header from './components/Header'
+import SectionContent from './components/section-content/SectionContent'
 
 function App() {
     return (
         <>
-            <div className='w-full h-screen grid place-content-center'>
-                <h2 className="text-2x text-gray-900">Hello World!!!!!!!!!!!!</h2>
+            <div className='flex flex-col w-full min-h-screen'>
+                <Header />
+                <SectionContent />
             </div>
         </>
     )
