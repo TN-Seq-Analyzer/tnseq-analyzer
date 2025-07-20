@@ -1,11 +1,48 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
+import fs from 'fs';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
 }
+
+const userDataPath = app.getPath('userData');
+const settingsPath = path.join(userDataPath, 'settings.json');
+
+
+const loadSettings = () => {
+  try {
+    if (fs.existsSync(settingsPath)) {
+      const data = fs.readFileSync(settingsPath, 'utf8')
+      return JSON.parse(data)
+    }
+  } catch (error) {
+    console.error('Error loading settings:', error)
+  }
+  return { language: 'en' }
+}
+
+const saveSettings = (settings: any) => {
+  try {
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2))
+  } catch (error) {
+    console.error('Error saving settings:', error)
+  }
+}
+
+ipcMain.handle('get-language', () => {
+  const settings = loadSettings()
+  return settings.language || 'en'
+})
+
+ipcMain.handle('set-language', (event, language: string) => {
+  const settings = loadSettings()
+  settings.language = language
+  saveSettings(settings)
+  return language
+})
 
 const createWindow = () => {
   // Create the browser window.
@@ -14,7 +51,11 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
     },
+    // autoHideMenuBar: true,
+    // resizable: false
   });
 
   // and load the index.html of the app.
