@@ -1,7 +1,9 @@
 import Logo from './logo'
-import { Globe } from 'lucide-react'
+import DropdownBtn from './ui/dropdownBtn'
+import { useTranslation } from 'react-i18next'
 
 function Header() {
+    const { t } = useTranslation('translation', { keyPrefix: 'header.link' })
     return (
         <div className='
         flex justify-between items-center h-12 lg:h-16 px-4 lg:px-10 
@@ -10,9 +12,10 @@ function Header() {
             <Logo />
             <div className='flex gap-4 lg:gap-4 items-center'>
                 {/* as tags "p" vao virar rotas posteriormente */}
-                <p className='text-xs text-[var(--text-primaryGray)] font-poppins font-semibold cursor-pointer'>Ajuda</p>
-                <p className='text-xs text-[var(--text-primaryGray)] font-poppins font-semibold cursor-pointer'>Sobre</p>
-                <Globe color='var(--text-primaryGray)' className='cursor-pointer' size={14} />
+                <DropdownBtn />
+                <p className='text-xs text-[var(--text-primaryGray)] font-poppins font-semibold cursor-pointer'>{t('help')}</p>
+                <p className='text-xs text-[var(--text-primaryGray)] font-poppins font-semibold cursor-pointer'>{t('about')}</p>
+
             </div>
         </div>
     )
