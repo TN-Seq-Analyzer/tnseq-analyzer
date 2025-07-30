@@ -1,15 +1,20 @@
 {
-    "header": {
-        "link": {
-            "help": "Help",
-            "about": "About"
-        }
-    },
-    "content": {
-        "home": {
-            "title": "Welcome to TNSeq Analyzer",
-            "description": "This application allows you to analyze TNSeq data efficiently.",
-            "instructions": "To get started, select a dataset and choose the analysis options from the sidebar."
-        }
+  "header": {
+    "link": {
+      "help": "Help",
+      "about": "About"
     }
+  },
+  "content": {
+    "home": {
+      "title": "Welcome to TNSeq Analyzer",
+      "description": "This application allows you to analyze TNSeq data efficiently.",
+      "instructions": "To get started, select a dataset and choose the analysis options from the sidebar."
+    }
+  },
+  "language": {
+    "title": "Language",
+    "english": "English",
+    "portuguese": "Portuguese"
+  }
 }
