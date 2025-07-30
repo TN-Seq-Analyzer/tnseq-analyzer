@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next"
-import DropdownBtn from "../ui/dropdownBtn"
 
 function SectionContent() {
     const { t, i18n } = useTranslation('translation', { keyPrefix: 'content.home' })
