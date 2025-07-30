@@ -1,6 +1,6 @@
-import Logo from './logo'
-import DropdownBtn from './ui/dropdownBtn'
 import { useTranslation } from 'react-i18next'
+import DropdownBtn from './dropdownBtn'
+import Logo from './logo'
 
 function Header() {
     const { t } = useTranslation('translation', { keyPrefix: 'header.link' })
