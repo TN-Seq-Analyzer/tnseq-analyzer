@@ -8,17 +8,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { changeLanguage } from "@/i18n";
 import { Check, Globe } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 function DropdownBtn() {
+  const [position, setPosition] = useState("english");
+
+  useEffect(() => {
+    async function fetchLanguage() {
+      try {
+        const lang = await window.electronAPI.getLanguage();
+        setPosition(lang === "en" ? "english" : "portuguese");
+      } catch {
+        setPosition("english");
+      }
+    }
+    fetchLanguage();
+  }, []);
+
   const handleLanguageChange = (lang: string) => {
     changeLanguage(lang);
     setPosition(lang === "en" ? "english" : "portuguese");
   };
   const { t } = useTranslation("translation", { keyPrefix: "language" });
-
-  const [position, setPosition] = useState("english");
 
   return (
     <DropdownMenu>
