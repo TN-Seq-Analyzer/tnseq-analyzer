@@ -8,8 +8,24 @@
   "content": {
     "home": {
       "title": "Welcome to TNSeq Analyzer",
-      "description": "This application allows you to analyze TNSeq data efficiently.",
-      "instructions": "To get started, select a dataset and choose the analysis options from the sidebar."
+      "description": "This tool was developed to facilitate the analysis of Tn-Seq data in bacteria. Upload your sequencing files, configure analysis parameters, and discover essential genes and molecular interaction networks in just a few clicks.",
+      "subtitle": "Main features",
+      "card1": {
+        "title": "Process Sample",
+        "description": "Start processing new genomic samples."
+      },
+      "card2": {
+        "title": "Interactive Analysis",
+        "description": "Visualize the processing interactively."
+      },
+      "card3": {
+        "title": "Analysis History",
+        "description": "Find previously performed analyses."
+      },
+      "card4": {
+        "title": "Pipeline Log",
+        "description": "View the processing history based on the pipeline."
+      }
     }
   },
   "language": {
