@@ -1,24 +1,26 @@
-import { useTranslation } from "react-i18next"
+import { useTranslation } from "react-i18next";
+import CardSection from "./CardSection";
 
 function SectionContent() {
-    const { t, i18n } = useTranslation('translation', { keyPrefix: 'content.home' })
+  const { t } = useTranslation("translation", {
+    keyPrefix: "content.home",
+  });
 
-    return (
-        <div className='flex w-full flex-1'>
-            <aside className='
-            flex w-25/100 lg:w-2/10 border-r-[1px] border-[var(--color-divider)]
-            p-4 lg:px-10 lg:py-7'>
-
-            </aside>
-            <main className='flex flex-1 bg-[var(--bg-main)] px-8 py-8 lg:pl-10 lg:py-12'>
-                <div>
-                    <h1 className='text-2xl font-bold mb-4'>{t('title')}</h1>
-                    <p className='mb-6'>{t('description')}</p>
-                    <p className='mt-4'>{t('instructions')}</p>
-                </div>
-            </main>
+  return (
+    <div className="flex w-full flex-1 select-none">
+      <aside className="flex w-25/100 border-r-[1px] border-[var(--color-divider)] p-4 lg:w-2/10 lg:px-10 lg:py-7"></aside>
+      <main className="flex flex-1 bg-[var(--bg-main)] px-8 py-8 lg:py-12 lg:pl-10">
+        <div className="flex flex-col gap-3">
+          <h1 className="font-inter text-xl font-bold">{t("title")}</h1>
+          <p className="font-inter mb-2 text-xs font-light">
+            {t("description")}
+          </p>
+          <p className="font-inter text-xs font-bold">{t("subtitle")}</p>
+          <CardSection />
         </div>
-    )
+      </main>
+    </div>
+  );
 }
 
-export default SectionContent
+export default SectionContent;
