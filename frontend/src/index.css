@@ -17,10 +17,13 @@
   --font-inter: Inter, sans-serif;
   --shadow-custom: 0px 2px 6px 0px rgba(0, 0, 0, 0.2);
 
+  /* Primary */
+  --color-primary: #99d3ff;
+
   /* Color Fonts */
 
   --text-primaryGray: #4f4f4f;
-  --color-titleCard: #121417;
+  --color-textPrimary: #121417;
   --color-descriptionCard: #667582;
 
   /* Backgrounds */

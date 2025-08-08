@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import BtnLoaderProject from "./BtnLoaderProject";
+import BtnModal from "./BtnModal";
 import CardSection from "./CardSection";
 
 function SectionContent() {
@@ -17,6 +19,10 @@ function SectionContent() {
           </p>
           <p className="font-inter text-xs font-bold">{t("subtitle")}</p>
           <CardSection />
+          <div className="mt-4 flex w-full items-center gap-2">
+            <BtnModal />
+            <BtnLoaderProject />
+          </div>
         </div>
       </main>
     </div>

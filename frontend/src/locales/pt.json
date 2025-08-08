@@ -25,6 +25,15 @@
       "card4": {
         "title": "Log do Pipeline",
         "description": "Visualize o historico de processamento com base no pipeline"
+      },
+      "modal": {
+        "nameButton": "Novo Projeto",
+        "loaderProject": "Carregar Projeto",
+        "title": "Criar Novo Projeto",
+        "description": "Digite o nome do projeto",
+        "label": "Nome",
+        "createButton": "Criar Projeto",
+        "cancelButton": "Cancelar"
       }
     }
   },
