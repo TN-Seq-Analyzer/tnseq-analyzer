@@ -6,9 +6,13 @@
     }
   },
   "content": {
+    "title": {
+      "home": "Welcome to TNSeq Analyzer"
+    },
+    "description": {
+      "home": "This tool was developed to facilitate the analysis of Tn-Seq data in bacteria. Upload your sequencing files, configure analysis parameters, and discover essential genes and molecular interaction networks in just a few clicks."
+    },
     "home": {
-      "title": "Welcome to TNSeq Analyzer",
-      "description": "This tool was developed to facilitate the analysis of Tn-Seq data in bacteria. Upload your sequencing files, configure analysis parameters, and discover essential genes and molecular interaction networks in just a few clicks.",
       "subtitle": "Main features",
       "card1": {
         "title": "Process Sample",

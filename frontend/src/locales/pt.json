@@ -6,9 +6,13 @@
     }
   },
   "content": {
+    "title": {
+      "home": "Bem-vindo ao TNSeq Analyzer"
+    },
+    "description": {
+      "home": "Esta ferramenta foi desenvolvida para facilitar a análise de dados de Tn-Seq em bactérias. Carregue seus arquivos de sequenciamento, configure os parâmetros de análise e descubra genes essenciais e redes de interação molecular com poucos cliques."
+    },
     "home": {
-      "title": "Bem-vindo ao TNSeq Analyzer",
-      "description": "Esta ferramenta foi desenvolvida para facilitar a análise de dados de Tn-Seq em bactérias. Carregue seus arquivos de sequenciamento, configure os parâmetros de análise e descubra genes essenciais e redes de interação molecular com poucos cliques.",
       "subtitle": "Funcionalidades Principais",
       "card1": {
         "title": "Processar Amostra",
