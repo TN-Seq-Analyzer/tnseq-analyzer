@@ -1,4 +1,4 @@
-import { Bug, ChartScatter, FlaskConical, History } from "lucide-react";
+import { BarChart3, FileText, FlaskConical, History } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import CardInfo from "./CardInfo";
 
@@ -14,7 +14,7 @@ function CardSection() {
         description={t("card1.description")}
       />
       <CardInfo
-        Icon={<ChartScatter size={14} color="#121417" />}
+        Icon={<BarChart3 size={14} color="#121417" />}
         title={t("card2.title")}
         description={t("card2.description")}
       />
@@ -24,7 +24,7 @@ function CardSection() {
         description={t("card3.description")}
       />
       <CardInfo
-        Icon={<Bug size={14} color="#121417" />}
+        Icon={<FileText size={14} color="#121417" />}
         title={t("card4.title")}
         description={t("card4.description")}
       />

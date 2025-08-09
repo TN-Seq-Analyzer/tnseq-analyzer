@@ -10,7 +10,6 @@ function SectionContent() {
 
   return (
     <div className="flex w-full flex-1 select-none">
-      <aside className="flex w-25/100 border-r-[1px] border-[var(--color-divider)] p-4 lg:w-2/10 lg:px-10 lg:py-7"></aside>
       <main className="flex flex-1 bg-[var(--bg-main)] px-8 py-8 lg:py-12 lg:pl-10">
         <div className="flex flex-col gap-3">
           <h1 className="font-inter text-xl font-bold">{t("title")}</h1>

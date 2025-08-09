@@ -13,12 +13,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 function BtnModal() {
   const { t } = useTranslation("translation", {
     keyPrefix: "content.home.modal",
   });
   const [nameProject, setNameProject] = useState("");
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleCancel = () => {
     setOpen(false);
@@ -27,7 +30,8 @@ function BtnModal() {
   const handleSubmit = () => {
     if (nameProject.trim().length >= 2) {
       setOpen(false);
-      setNameProject("");
+      toast.success(`${t("toastSuccess")}`);
+      navigate("/processSample");
     }
   };
   return (

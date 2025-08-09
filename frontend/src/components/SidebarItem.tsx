@@ -10,7 +10,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
   return (
     <Link
       to={to}
-      className={`flex items-center rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 ${
+      className={`flex items-center rounded-lg px-3 py-2.5 transition-colors select-none hover:bg-gray-50 ${
         active ? "bg-[#f2f2f2] font-bold" : "font-medium"
       }`}
     >

@@ -33,7 +33,8 @@
         "description": "Digite o nome do projeto",
         "label": "Nome",
         "createButton": "Criar Projeto",
-        "cancelButton": "Cancelar"
+        "cancelButton": "Cancelar",
+        "toastSuccess": "Projeto criado com sucesso!"
       }
     }
   },
@@ -41,5 +42,12 @@
     "title": "Idioma",
     "english": "Inglês",
     "portuguese": "Português"
+  },
+  "sideBar": {
+    "home": "Início",
+    "processSample": "Processar Amostra",
+    "interactiveAnalysis": "Análise Interativa",
+    "analysisHistory": "Histórico de Análises",
+    "pipelineLog": "Log do Pipeline"
   }
 }
