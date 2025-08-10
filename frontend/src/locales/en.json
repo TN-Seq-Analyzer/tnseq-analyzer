@@ -81,7 +81,9 @@
       },
       "analysis": {
         "progress": "Analysis Progress",
-        "complete": "Complete"
+        "complete": "Complete",
+        "completeToast": "Analysis completed successfully!",
+        "cancelledToast": "Analysis cancelled!"
       }
     }
   },

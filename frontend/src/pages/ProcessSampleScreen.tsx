@@ -6,12 +6,15 @@ import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useAnalysis } from "@/hooks/useAnalysis";
 import { useTranslation } from "react-i18next";
 
 function ProcessSampleScreen() {
   const { t } = useTranslation("translation", {
     keyPrefix: "content.processSample",
   });
+  const { progress, isRunning, startMockAnalysis, cancelAnalysis } =
+    useAnalysis();
 
   return (
     <main className="flex flex-1 overflow-y-auto bg-[var(--bg-main)] pl-8 select-none lg:py-12 lg:pl-10">
@@ -55,16 +58,21 @@ function ProcessSampleScreen() {
             <Label className="font-poppins text-xs font-bold text-[var(--text-primaryGray)]">
               {t("analysis.progress")}
             </Label>
-            <ProgressMock />
+            <ProgressMock progress={progress} />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Button className="font-inter h-[30px] cursor-pointer bg-[#0D80F2] text-xs text-white hover:bg-[#63a5e7]">
+            <Button
+              className="font-inter h-[30px] cursor-pointer bg-[#0D80F2] text-xs text-white hover:bg-[#63a5e7]"
+              onClick={startMockAnalysis}
+              disabled={isRunning}
+            >
               {t("button.startAnalysis")}
             </Button>
             <Button
-              disabled
+              disabled={!isRunning}
+              onClick={cancelAnalysis}
               variant="default"
-              className="font-inter text-textPrimary h-[30px] bg-gray-300 text-xs"
+              className="font-inter text-textPrimary h-[30px] cursor-pointer bg-gray-300 text-xs hover:bg-gray-200"
             >
               {t("button.cancelAnalysis")}
             </Button>

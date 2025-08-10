@@ -12,7 +12,7 @@ function App() {
           <Sidebar />
 
           <RouterLayout />
-          <Toaster duration={3000} richColors />
+          <Toaster duration={3000} richColors className="select-none" />
         </div>
       </div>
     </>
