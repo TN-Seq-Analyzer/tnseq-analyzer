@@ -6,10 +6,11 @@ import RouterLayout from "./routes/routes";
 function App() {
   return (
     <>
-      <div className="flex min-h-screen w-full flex-col">
+      <div className="flex h-screen w-full flex-col">
         <Header />
-        <div className="flex min-h-[calc(100vh-48px)] w-full flex-1">
+        <div className="flex h-[calc(100vh-48px)] w-full flex-1">
           <Sidebar />
+
           <RouterLayout />
           <Toaster duration={3000} richColors />
         </div>
