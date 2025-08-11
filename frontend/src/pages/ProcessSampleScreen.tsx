@@ -1,12 +1,14 @@
 import Description from "@/components/Description";
 import ChooseFile from "@/components/process-sample/ChooseFile";
 import InputAdvanced from "@/components/process-sample/InputAdvanced";
+import InputManual from "@/components/process-sample/InputManual";
 import { ProgressMock } from "@/components/process-sample/Progess";
 import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useAnalysis } from "@/hooks/useAnalysis";
+import { useFileHandler } from "@/hooks/useFileHandler";
 import { useTranslation } from "react-i18next";
 
 function ProcessSampleScreen() {
@@ -16,17 +18,53 @@ function ProcessSampleScreen() {
   const { progress, isRunning, startMockAnalysis, cancelAnalysis } =
     useAnalysis();
 
+  const {
+    files,
+    handleOpenFastq,
+    handleOpenGff,
+    transpFile,
+    setTranspFile,
+    idFile,
+    setIdFile,
+  } = useFileHandler();
+
+  console.log("File Name:", transpFile);
+  console.log("File Content:", files.fastq.content);
+
   return (
     <main className="flex flex-1 overflow-y-auto bg-[var(--bg-main)] pl-8 select-none lg:py-12 lg:pl-10">
       <div className="mt-8 flex min-h-screen flex-1 flex-col gap-3">
         <Title titleValue="processSample" />
         <Description descriptionValue="processSample" />
-        <ChooseFile defaultFileName="fastq" />
-        <ChooseFile defaultFileName="fasta" />
-        <ChooseFile defaultFileName="gff" />
-        <ChooseFile defaultFileName="sequenceTransp" />
-        <ChooseFile defaultFileName="idOrganism" />
-        <ChooseFile defaultFileName="directory" />
+        <ChooseFile
+          defaultFileName="fastq"
+          disabled
+          handleOpen={() => handleOpenFastq("fastq")}
+          fileName={files.fastq.name}
+        />
+        <ChooseFile
+          defaultFileName="fasta"
+          disabled
+          fileName={files.fasta.name}
+        />
+        <ChooseFile
+          defaultFileName="gff"
+          disabled
+          handleOpen={() => handleOpenGff("gff")}
+          fileName={files.gff.name}
+        />
+        <InputManual
+          defaultFileName="sequenceTransp"
+          value={transpFile}
+          setValue={setTranspFile}
+        />
+        <InputManual
+          defaultFileName="idOrganism"
+          value={idFile}
+          setValue={setIdFile}
+        />
+
+        <ChooseFile defaultFileName="directory" disabled />
         <section className="flex w-[72.5%] flex-col gap-4 py-6">
           <Title titleValue="advancedParameters" />
           <div className="mt-4 grid grid-cols-2 gap-5">
