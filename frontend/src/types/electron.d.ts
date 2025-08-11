@@ -12,6 +12,7 @@ export interface IElectronFileAPI {
   openFileDialogFastq: FileDialogResult;
   openFileDialogFasta: FileDialogResult;
   openFileDialogGff: FileDialogResult;
+  openFileDialogDirectory: FileDialogResult;
 }
 
 declare global {

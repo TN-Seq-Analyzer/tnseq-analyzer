@@ -5,6 +5,7 @@ export function useFileHandler() {
     fastq: { name: null, content: null },
     fasta: { name: null, content: null },
     gff: { name: null, content: null },
+    directory: { directory: null },
   });
   const [transpFile, setTranspFile] = useState("");
   const [idFile, setIdFile] = useState("");
@@ -45,11 +46,25 @@ export function useFileHandler() {
     handleOpenFile("gff", field);
   const handleOpenFasta = (field: keyof typeof files) =>
     handleOpenFile("fasta", field);
+
+  const handleOpenDirectory = async (
+    field: keyof typeof files,
+  ): Promise<void> => {
+    const directory = await window.electronFile.openFileDialogDirectory();
+    if (directory) {
+      const { filePath } = directory;
+      setFiles((prev) => ({
+        ...prev,
+        [field]: { directory: filePath },
+      }));
+    }
+  };
   return {
     files,
     handleOpenFastq,
     handleOpenGff,
     handleOpenFasta,
+    handleOpenDirectory,
     transpFile,
     setTranspFile,
     idFile,

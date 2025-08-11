@@ -23,11 +23,13 @@ function ProcessSampleScreen() {
     handleOpenFastq,
     handleOpenGff,
     handleOpenFasta,
+    handleOpenDirectory,
     transpFile,
     setTranspFile,
     idFile,
     setIdFile,
   } = useFileHandler();
+  console.log(files.fasta);
 
   return (
     <main className="flex flex-1 overflow-y-auto bg-[var(--bg-main)] pl-8 select-none lg:py-12 lg:pl-10">
@@ -63,7 +65,12 @@ function ProcessSampleScreen() {
           setValue={setIdFile}
         />
 
-        <ChooseFile defaultFileName="directory" disabled />
+        <ChooseFile
+          defaultFileName="directory"
+          disabled
+          handleOpen={() => handleOpenDirectory("directory")}
+          fileName={files.directory.directory}
+        />
         <section className="flex w-[72.5%] flex-col gap-4 py-6">
           <Title titleValue="advancedParameters" />
           <div className="mt-4 grid grid-cols-2 gap-5">
