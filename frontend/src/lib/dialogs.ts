@@ -28,3 +28,16 @@ export async function handleOpenFileDialogGff() {
 
   return { filePath, fileContent };
 }
+
+export async function handleOpenFileDialogFasta() {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [{ name: "Fasta", extensions: ["fasta"] }],
+  });
+
+  if (canceled) return null;
+
+  const filePath = filePaths[0];
+
+  return { filePath };
+}

@@ -12,4 +12,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
 contextBridge.exposeInMainWorld("electronFile", {
   openFileDialogFastq: () => ipcRenderer.invoke("openFileDialogFastq"),
   openFileDialogGff: () => ipcRenderer.invoke("openFileDialogGff"),
+  openFileDialogFasta: () => ipcRenderer.invoke("openFileDialogFasta"),
 });

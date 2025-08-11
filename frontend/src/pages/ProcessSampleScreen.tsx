@@ -22,14 +22,12 @@ function ProcessSampleScreen() {
     files,
     handleOpenFastq,
     handleOpenGff,
+    handleOpenFasta,
     transpFile,
     setTranspFile,
     idFile,
     setIdFile,
   } = useFileHandler();
-
-  console.log("File Name:", transpFile);
-  console.log("File Content:", files.fastq.content);
 
   return (
     <main className="flex flex-1 overflow-y-auto bg-[var(--bg-main)] pl-8 select-none lg:py-12 lg:pl-10">
@@ -46,6 +44,7 @@ function ProcessSampleScreen() {
           defaultFileName="fasta"
           disabled
           fileName={files.fasta.name}
+          handleOpen={() => handleOpenFasta("fasta")}
         />
         <ChooseFile
           defaultFileName="gff"
