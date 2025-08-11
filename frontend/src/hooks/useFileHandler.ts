@@ -13,7 +13,8 @@ export function useFileHandler() {
     const result = await window.electronFile.openFileDialogFastq();
     if (result) {
       const { filePath, fileContent } = result;
-      const fileName = filePath.split("/").pop() || "";
+      const fileAbs = filePath.split("\\");
+      const fileName = fileAbs[fileAbs.length - 1] || "";
       setFiles((prev) => ({
         ...prev,
         [field]: { name: fileName, content: fileContent },
@@ -24,7 +25,8 @@ export function useFileHandler() {
     const result = await window.electronFile.openFileDialogGff();
     if (result) {
       const { filePath, fileContent } = result;
-      const fileName = filePath.split("/").pop() || "";
+      const fileAbs = filePath.split("\\");
+      const fileName = fileAbs[fileAbs.length - 1] || "";
       setFiles((prev) => ({
         ...prev,
         [field]: { name: fileName, content: fileContent },

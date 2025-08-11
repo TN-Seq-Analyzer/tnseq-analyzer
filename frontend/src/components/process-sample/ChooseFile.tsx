@@ -29,7 +29,7 @@ function ChooseFile({
         <Input
           disabled={disabled}
           className={`font-inter bg-bgInputFile ${!fileName ? "text-textPrimary" : "text-green-500"} h-[30px] w-[60%] rounded-sm border-0 text-[10px] font-bold select-none md:text-[10px]`}
-          value={t(`file.${fileNameToDisplay}`)}
+          value={!fileName ? t(`file.${fileNameToDisplay}`) : fileName}
         />
         <Button
           onClick={handleOpen}
