@@ -3,6 +3,7 @@ import started from "electron-squirrel-startup";
 import fs from "fs";
 import path from "node:path";
 import {
+  handleOpenFileDialogFasta,
   handleOpenFileDialogFastq,
   handleOpenFileDialogGff,
 } from "./lib/dialogs";
@@ -54,6 +55,10 @@ ipcMain.handle("openFileDialogFastq", async () => {
 
 ipcMain.handle("openFileDialogGff", async () => {
   return await handleOpenFileDialogGff();
+});
+
+ipcMain.handle("openFileDialogFasta", async () => {
+  return await handleOpenFileDialogFasta();
 });
 
 const createWindow = () => {

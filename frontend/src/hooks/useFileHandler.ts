@@ -9,20 +9,25 @@ export function useFileHandler() {
   const [transpFile, setTranspFile] = useState("");
   const [idFile, setIdFile] = useState("");
 
-  const handleOpenFastq = async (field: keyof typeof files) => {
-    const result = await window.electronFile.openFileDialogFastq();
-    if (result) {
-      const { filePath, fileContent } = result;
-      const fileAbs = filePath.split("\\");
-      const fileName = fileAbs[fileAbs.length - 1] || "";
-      setFiles((prev) => ({
-        ...prev,
-        [field]: { name: fileName, content: fileContent },
-      }));
+  const handleOpenFile = async (
+    type: "fastq" | "gff" | "fasta",
+    field: keyof typeof files,
+  ) => {
+    let dialogFn;
+    switch (type) {
+      case "fastq":
+        dialogFn = window.electronFile.openFileDialogFastq;
+        break;
+      case "gff":
+        dialogFn = window.electronFile.openFileDialogGff;
+        break;
+      case "fasta":
+        dialogFn = window.electronFile.openFileDialogFasta;
+        break;
+      default:
+        throw new Error("Tipo de arquivo não suportado");
     }
-  };
-  const handleOpenGff = async (field: keyof typeof files) => {
-    const result = await window.electronFile.openFileDialogGff();
+    const result = await dialogFn();
     if (result) {
       const { filePath, fileContent } = result;
       const fileAbs = filePath.split("\\");
@@ -34,10 +39,17 @@ export function useFileHandler() {
     }
   };
 
+  const handleOpenFastq = (field: keyof typeof files) =>
+    handleOpenFile("fastq", field);
+  const handleOpenGff = (field: keyof typeof files) =>
+    handleOpenFile("gff", field);
+  const handleOpenFasta = (field: keyof typeof files) =>
+    handleOpenFile("fasta", field);
   return {
     files,
     handleOpenFastq,
     handleOpenGff,
+    handleOpenFasta,
     transpFile,
     setTranspFile,
     idFile,

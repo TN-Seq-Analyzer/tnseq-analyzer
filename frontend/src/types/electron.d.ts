@@ -3,19 +3,15 @@ export interface IElectronAPI {
   setLanguage: (language: string) => Promise<string>;
 }
 
+type FileDialogResult = () => Promise<{
+  filePath: string;
+  fileContent?: string;
+} | null>;
+
 export interface IElectronFileAPI {
-  openFileDialogFastq: () => Promise<{
-    filePath: string;
-    fileContent: string;
-  } | null>;
-  openFileDialogFasta: () => Promise<{
-    filePath: string;
-    fileContent: string;
-  } | null>;
-  openFileDialogGff: () => Promise<{
-    filePath: string;
-    fileContent: string;
-  } | null>;
+  openFileDialogFastq: FileDialogResult;
+  openFileDialogFasta: FileDialogResult;
+  openFileDialogGff: FileDialogResult;
 }
 
 declare global {
