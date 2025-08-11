@@ -2,6 +2,11 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import started from "electron-squirrel-startup";
 import fs from "fs";
 import path from "node:path";
+import {
+  handleOpenFileDialogFastq,
+  handleOpenFileDialogGff,
+} from "./lib/dialogs";
+const { dialog } = require("electron");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -41,6 +46,14 @@ ipcMain.handle("set-language", (event, language: string) => {
   settings.language = language;
   saveSettings(settings);
   return language;
+});
+
+ipcMain.handle("openFileDialogFastq", async () => {
+  return await handleOpenFileDialogFastq();
+});
+
+ipcMain.handle("openFileDialogGff", async () => {
+  return await handleOpenFileDialogGff();
 });
 
 const createWindow = () => {
