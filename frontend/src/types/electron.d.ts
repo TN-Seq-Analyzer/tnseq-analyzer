@@ -13,6 +13,9 @@ export interface IElectronFileAPI {
   openFileDialogFasta: FileDialogResult;
   openFileDialogGff: FileDialogResult;
   openFileDialogDirectory: FileDialogResult;
+  getFiles: () => Promise<any>;
+  setFiles: (files: any) => Promise<any>;
+  newProject: () => Promise<any>;
 }
 
 declare global {

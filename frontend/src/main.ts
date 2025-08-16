@@ -8,7 +8,6 @@ import {
   handleOpenFileDialogFastq,
   handleOpenFileDialogGff,
 } from "./lib/dialogs";
-const { dialog } = require("electron");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -17,6 +16,61 @@ if (started) {
 
 const userDataPath = app.getPath("userData");
 const settingsPath = path.join(userDataPath, "settings.json");
+const filesPath = path.join(userDataPath, "files.json");
+
+const loadFiles = () => {
+  try {
+    if (fs.existsSync(filesPath)) {
+      const data = fs.readFileSync(filesPath, "utf8");
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error("Error loading files:", error);
+  }
+  return {
+    fastq: { name: null, content: null },
+    fasta: { name: null, content: null },
+    gff: { name: null, content: null },
+    directory: { directory: null },
+    transpFile: "",
+    idFile: "",
+  };
+};
+
+ipcMain.handle("new-project", () => {
+  // por enquanto apenas limpa os dados, pq não tem backend para persistir novos projetos ainda
+  try {
+    fs.writeFileSync(
+      filesPath,
+      JSON.stringify({
+        fastq: { name: null, content: null },
+        fasta: { name: null, content: null },
+        gff: { name: null, content: null },
+        directory: { directory: null },
+        transpFile: "",
+        idFile: "",
+      }),
+    );
+  } catch (error) {
+    console.error("Erro ao criar novo projeto", error);
+  }
+});
+
+const saveFiles = (files: any) => {
+  try {
+    fs.writeFileSync(filesPath, JSON.stringify(files, null, 2));
+  } catch (error) {
+    console.error("Error saving files:", error);
+  }
+};
+ipcMain.handle("get-files", () => {
+  return loadFiles();
+});
+
+ipcMain.handle("set-files", (event, files) => {
+  saveFiles(files);
+  return true;
+});
 
 const loadSettings = () => {
   try {

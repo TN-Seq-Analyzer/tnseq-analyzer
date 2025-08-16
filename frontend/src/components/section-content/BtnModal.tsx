@@ -27,6 +27,11 @@ function BtnModal() {
     setOpen(false);
     setNameProject("");
   };
+
+  const handleNewProject = () => {
+    window.electronFile.newProject();
+  };
+
   const handleSubmit = () => {
     if (nameProject.trim().length >= 2) {
       setOpen(false);
@@ -81,7 +86,10 @@ function BtnModal() {
               type="submit"
               className="h-[30px] w-[90px] cursor-pointer text-[11px] select-none"
               disabled={nameProject.trim().length < 2}
-              onClick={() => handleSubmit()}
+              onClick={() => {
+                handleSubmit();
+                handleNewProject();
+              }}
             >
               {t("createButton")}
             </Button>

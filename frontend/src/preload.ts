@@ -14,4 +14,7 @@ contextBridge.exposeInMainWorld("electronFile", {
   openFileDialogGff: () => ipcRenderer.invoke("openFileDialogGff"),
   openFileDialogFasta: () => ipcRenderer.invoke("openFileDialogFasta"),
   openFileDialogDirectory: () => ipcRenderer.invoke("openFileDialogDirectory"),
+  getFiles: () => ipcRenderer.invoke("get-files"),
+  setFiles: (files: any) => ipcRenderer.invoke("set-files", files),
+  newProject: () => ipcRenderer.invoke("new-project"),
 });
