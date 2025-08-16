@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function useFileHandler() {
   const [files, setFiles] = useState({
@@ -6,9 +6,31 @@ export function useFileHandler() {
     fasta: { name: null, content: null },
     gff: { name: null, content: null },
     directory: { directory: null },
+    transpFile: "",
+    idFile: "",
   });
+
+  useEffect(() => {
+    async function fetchFiles() {
+      if (window.electronFile?.getFiles) {
+        const persisted = await window.electronFile.getFiles();
+        if (persisted) {
+          setFiles(persisted);
+          setTranspFile(persisted.transpFile || "");
+          setIdFile(persisted.idFile || "");
+        }
+      }
+    }
+    fetchFiles();
+  }, []);
   const [transpFile, setTranspFile] = useState("");
   const [idFile, setIdFile] = useState("");
+
+  const persistFiles = (updatedFiles: typeof files) => {
+    if (window.electronFile?.setFiles) {
+      window.electronFile.setFiles(updatedFiles);
+    }
+  };
 
   const handleOpenFile = async (
     type: "fastq" | "gff" | "fasta",
@@ -33,10 +55,14 @@ export function useFileHandler() {
       const { filePath, fileContent } = result;
       const fileAbs = filePath.split("\\");
       const fileName = fileAbs[fileAbs.length - 1] || "";
-      setFiles((prev) => ({
-        ...prev,
-        [field]: { name: fileName, content: fileContent },
-      }));
+      setFiles((prev) => {
+        const updated = {
+          ...prev,
+          [field]: { name: fileName, content: fileContent },
+        };
+        persistFiles(updated);
+        return updated;
+      });
     }
   };
 
@@ -53,12 +79,35 @@ export function useFileHandler() {
     const directory = await window.electronFile.openFileDialogDirectory();
     if (directory) {
       const { filePath } = directory;
-      setFiles((prev) => ({
-        ...prev,
-        [field]: { directory: filePath },
-      }));
+      setFiles((prev) => {
+        const updated = {
+          ...prev,
+          [field]: { directory: filePath },
+        };
+        persistFiles(updated);
+        return updated;
+      });
     }
   };
+
+  const updateTranspFile = (value: string) => {
+    setTranspFile(value);
+    setFiles((prev) => {
+      const updated = { ...prev, transpFile: value };
+      persistFiles(updated);
+      return updated;
+    });
+  };
+
+  const updateIdFile = (value: string) => {
+    setIdFile(value);
+    setFiles((prev) => {
+      const updated = { ...prev, idFile: value };
+      persistFiles(updated);
+      return updated;
+    });
+  };
+
   return {
     files,
     handleOpenFastq,
@@ -66,8 +115,8 @@ export function useFileHandler() {
     handleOpenFasta,
     handleOpenDirectory,
     transpFile,
-    setTranspFile,
+    setTranspFile: updateTranspFile,
     idFile,
-    setIdFile,
+    setIdFile: updateIdFile,
   };
 }
