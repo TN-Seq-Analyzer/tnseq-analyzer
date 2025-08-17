@@ -16,24 +16,24 @@ const getDefaultFileData = (): FileData => ({
   transpFile: "",
   idFile: "",
   advancedParams: {
-    minimumReadLength: "0",
-    maximumReadLength: "0",
-    trimmingQuality: "0",
-    minimumMapingQuality: "0",
-    numberOfThreadsForAnalysis: "0",
-    minConfidenceThreshold: "0",
-    maxNonEssentialGenes: "0",
+    minimumReadLength: 0,
+    maximumReadLength: 0,
+    trimmingQuality: 0,
+    minimumMapingQuality: 0,
+    numberOfThreadsForAnalysis: 0,
+    minConfidenceThreshold: 0,
+    maxNonEssentialGenes: 0,
   },
 });
 
 const getDefaultAdvancedParams = (): AdvancedParams => ({
-  minimumReadLength: "0",
-  maximumReadLength: "0",
-  trimmingQuality: "0",
-  minimumMapingQuality: "0",
-  numberOfThreadsForAnalysis: "0",
-  minConfidenceThreshold: "0",
-  maxNonEssentialGenes: "0",
+  minimumReadLength: 0,
+  maximumReadLength: 0,
+  trimmingQuality: 0,
+  minimumMapingQuality: 0,
+  numberOfThreadsForAnalysis: 0,
+  minConfidenceThreshold: 0,
+  maxNonEssentialGenes: 0,
 });
 
 export const loadFiles = (): FileData => {

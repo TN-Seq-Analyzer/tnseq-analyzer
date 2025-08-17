@@ -10,13 +10,13 @@ export interface FileData {
 }
 
 export interface AdvancedParams {
-  minimumReadLength: string;
-  maximumReadLength: string;
-  trimmingQuality: string;
-  minimumMapingQuality: string;
-  numberOfThreadsForAnalysis: string;
-  minConfidenceThreshold: string;
-  maxNonEssentialGenes: string;
+  minimumReadLength: number;
+  maximumReadLength: number;
+  trimmingQuality: number;
+  minimumMapingQuality: number;
+  numberOfThreadsForAnalysis: number;
+  minConfidenceThreshold: number;
+  maxNonEssentialGenes: number;
 }
 
 export interface Settings {
