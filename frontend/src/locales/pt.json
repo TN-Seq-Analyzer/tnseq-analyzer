@@ -6,15 +6,97 @@
     }
   },
   "content": {
+    "title": {
+      "home": "Bem-vindo ao TNSeq Analyzer",
+      "processSample": "Processar Amostra",
+      "advancedParameters": "Parâmetros Avançados"
+    },
+    "description": {
+      "home": "Esta ferramenta foi desenvolvida para facilitar a análise de dados de Tn-Seq em bactérias. Carregue seus arquivos de sequenciamento, configure os parâmetros de análise e descubra genes essenciais e redes de interação molecular com poucos cliques.",
+      "processSample": "Faça upload dos arquivos  FASTQ, GFF e GenBank (opcional)."
+    },
     "home": {
-      "title": "Bem-vindo ao TNSeq Analyzer",
-      "description": "Esta aplicação permite analisar dados TNSeq de forma eficiente.",
-      "instructions": "Para começar, selecione um conjunto de dados e escolha as opções de análise na barra lateral."
+      "subtitle": "Funcionalidades Principais",
+      "card1": {
+        "title": "Processar Amostra",
+        "description": "Inicie o processamento de novas amostras genômicas."
+      },
+      "card2": {
+        "title": "Análise Interativa",
+        "description": "Visualize o processamento de forma interativa"
+      },
+      "card3": {
+        "title": "Histórico de Análises",
+        "description": "Encontre análises feitas anteriormente"
+      },
+      "card4": {
+        "title": "Log do Pipeline",
+        "description": "Visualize o historico de processamento com base no pipeline"
+      },
+      "modal": {
+        "nameButton": "Novo Projeto",
+        "loaderProject": "Carregar Projeto",
+        "title": "Criar Novo Projeto",
+        "description": "Digite o nome do projeto",
+        "label": "Nome",
+        "createButton": "Criar Projeto",
+        "cancelButton": "Cancelar",
+        "toastSuccess": "Projeto criado com sucesso!"
+      }
+    },
+    "processSample": {
+      "button": {
+        "upload": "Escolher",
+        "startAnalysis": "Iniciar Análise",
+        "cancelAnalysis": "Cancelar Análise"
+      },
+      "file": {
+        "fastq": "Escolha o arquivo FASTQ",
+        "fasta": "Escolha o arquivo FASTA",
+        "gff": "Escolha o arquivo GFF",
+        "sequenceTransp": "EX: TTAA",
+        "idOrganism": "EX: 511145",
+        "directory": "C:\\Users\\user\\OneDrive\\Documentos\\tnseq-analyzer"
+      },
+      "label": {
+        "fastq": "Arquivo FASTQ",
+        "fasta": "Arquivo FASTA do Genoma de Referência:",
+        "gff": "Arquivo GFF",
+        "sequenceTransp": "Sequência de transposon (5' ponta):",
+        "idOrganism": "ID do Organismo para STRING DB (Ex: '9606' para Homo sapiens):",
+        "directory": "Diretório para salvar resultados:"
+      },
+      "advancedParams": {
+        "minReadLength": "Comprimento mínimo da leitura",
+        "maxReadLength": "Comprimento Máximo da Leitura",
+        "trimQuality": "Qualidade de Trimagem",
+        "minMappingQuality": "Qualidade Mínima de Mapeamento",
+        "numThreads": "Número de Threads para Análise"
+      },
+      "stringDbOptions": {
+        "title": "Opções STRING DB",
+        "generateInteractionNetwork": "Gerar Rede de Interações",
+        "minConfidenceThreshold": "Limiar Mínimo de Confiança",
+        "maxNonEssentialGenes": "Max Genes Não Essenciais"
+      },
+      "analysis": {
+        "progress": "Progresso da Análise",
+        "complete": "Completo",
+        "completeToast": "Análise finalizada com sucesso!",
+        "cancelledToast": "Análise cancelada!"
+      }
     }
   },
   "language": {
     "title": "Idioma",
     "english": "Inglês",
     "portuguese": "Português"
+  },
+  "sideBar": {
+    "home": "Início",
+    "processSample": "Processar Amostra",
+    "interactiveAnalysis": "Análise Interativa",
+    "analysisHistory": "Histórico de Análises",
+    "pipelineLog": "Log do Pipeline"
   }
 }

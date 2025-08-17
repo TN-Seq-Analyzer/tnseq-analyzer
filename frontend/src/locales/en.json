@@ -6,15 +6,97 @@
     }
   },
   "content": {
+    "title": {
+      "home": "Welcome to TNSeq Analyzer",
+      "processSample": "Process Sample",
+      "advancedParameters": "Advanced Parameters"
+    },
+    "description": {
+      "home": "This tool was developed to facilitate the analysis of Tn-Seq data in bacteria. Upload your sequencing files, configure analysis parameters, and discover essential genes and molecular interaction networks in just a few clicks.",
+      "processSample": "Upload FASTQ, GFF, and GenBank files (optional)."
+    },
     "home": {
-      "title": "Welcome to TNSeq Analyzer",
-      "description": "This application allows you to analyze TNSeq data efficiently.",
-      "instructions": "To get started, select a dataset and choose the analysis options from the sidebar."
+      "subtitle": "Main features",
+      "card1": {
+        "title": "Process Sample",
+        "description": "Start processing new genomic samples."
+      },
+      "card2": {
+        "title": "Interactive Analysis",
+        "description": "Visualize the processing interactively."
+      },
+      "card3": {
+        "title": "Analysis History",
+        "description": "Find previously performed analyses."
+      },
+      "card4": {
+        "title": "Pipeline Log",
+        "description": "View the processing history based on the pipeline."
+      },
+      "modal": {
+        "nameButton": "New Project",
+        "loaderProject": "Load Project",
+        "title": "Create New Project",
+        "description": "Enter the project name",
+        "label": "Name",
+        "createButton": "Create Project",
+        "cancelButton": "Cancel",
+        "toastSuccess": "Project created successfully!"
+      }
+    },
+    "processSample": {
+      "button": {
+        "upload": "Choose",
+        "startAnalysis": "Start Analysis",
+        "cancelAnalysis": "Cancel Analysis"
+      },
+      "file": {
+        "fastq": "Choose FASTQ file",
+        "fasta": "Choose FASTA file",
+        "gff": "Choose GFF file",
+        "sequenceTransp": "EX: TTAA",
+        "idOrganism": "EX: 511145",
+        "directory": "C:\\Users\\user\\OneDrive\\Documents\\tnseq-analyzer"
+      },
+      "label": {
+        "fastq": "FASTQ File",
+        "fasta": "Reference Genome FASTA File:",
+        "gff": "GFF File",
+        "sequenceTransp": "Transposon sequence (5' end):",
+        "idOrganism": "Organism ID for STRING DB (EX: '9606' for Homo sapiens):",
+        "directory": "Directory to save results:"
+      },
+      "advancedParams": {
+        "minReadLength": "Minimum Read Length",
+        "maxReadLength": "Maximum Read Length",
+        "trimQuality": "Trimming Quality",
+        "minMappingQuality": "Minimum Mapping Quality",
+        "numThreads": "Number of Threads for Analysis"
+      },
+      "stringDbOptions": {
+        "title": "STRING DB Options",
+        "generateInteractionNetwork": "Generate Interaction Network",
+        "minConfidenceThreshold": "Minimum Confidence Threshold",
+        "maxNonEssentialGenes": "Max Non-Essential Genes"
+      },
+      "analysis": {
+        "progress": "Analysis Progress",
+        "complete": "Complete",
+        "completeToast": "Analysis completed successfully!",
+        "cancelledToast": "Analysis cancelled!"
+      }
     }
   },
   "language": {
     "title": "Language",
     "english": "English",
     "portuguese": "Portuguese"
+  },
+  "sideBar": {
+    "home": "Home",
+    "processSample": "Process Sample",
+    "interactiveAnalysis": "Interactive Analysis",
+    "analysisHistory": "Analysis History",
+    "pipelineLog": "Pipeline Log"
   }
 }

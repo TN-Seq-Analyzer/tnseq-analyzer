@@ -41,9 +41,9 @@ function DropdownBtn() {
           size={14}
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="bg-white border border-gray-200">
         <DropdownMenuLabel className="text-sm">{t("title")}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-gray-200" />
         <DropdownMenuItem
           onSelect={() => handleLanguageChange("en")}
           className={`flex justify-between items-center ${
