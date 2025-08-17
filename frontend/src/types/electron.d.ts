@@ -1,23 +1,22 @@
+import { AdvancedParams, FileData, FileDialogResult } from "./index";
+
 export interface IElectronAPI {
   getLanguage: () => Promise<string>;
   setLanguage: (language: string) => Promise<string>;
 }
 
-type FileDialogResult = () => Promise<{
-  filePath: string;
-  fileContent?: string;
-} | null>;
+type FileDialogResultFunction = () => Promise<FileDialogResult | null>;
 
 export interface IElectronFileAPI {
-  openFileDialogFastq: FileDialogResult;
-  openFileDialogFasta: FileDialogResult;
-  openFileDialogGff: FileDialogResult;
-  openFileDialogDirectory: FileDialogResult;
-  getFiles: () => Promise<any>;
-  setFiles: (files: any) => Promise<any>;
-  newProject: () => Promise<any>;
-  getAdvancedParams: () => Promise<any>;
-  setAdvancedParams: (advancedParams: any) => Promise<boolean>;
+  openFileDialogFastq: FileDialogResultFunction;
+  openFileDialogFasta: FileDialogResultFunction;
+  openFileDialogGff: FileDialogResultFunction;
+  openFileDialogDirectory: FileDialogResultFunction;
+  getFiles: () => Promise<FileData>;
+  setFiles: (files: FileData) => Promise<boolean>;
+  newProject: () => Promise<void>;
+  getAdvancedParams: () => Promise<AdvancedParams>;
+  setAdvancedParams: (advancedParams: AdvancedParams) => Promise<boolean>;
 }
 
 declare global {

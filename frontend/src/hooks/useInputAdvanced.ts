@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { AdvancedParams } from "../types/index";
 
 export function useInputAdvanced() {
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<AdvancedParams>({
     minimumReadLength: "0",
     maximumReadLength: "0",
     trimmingQuality: "0",
@@ -23,7 +24,7 @@ export function useInputAdvanced() {
     fetchAdvancedParams();
   }, []);
 
-  const persistAdvancedParams = (updatedParams: typeof values) => {
+  const persistAdvancedParams = (updatedParams: AdvancedParams) => {
     if (window.electronFile?.setAdvancedParams) {
       window.electronFile.setAdvancedParams(updatedParams);
     }
@@ -31,7 +32,7 @@ export function useInputAdvanced() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    const updatedValues = {
+    const updatedValues: AdvancedParams = {
       ...values,
       [e.target.name]: newValue,
     };

@@ -1,201 +1,22 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app } from "electron";
 import started from "electron-squirrel-startup";
-import fs from "fs";
-import path from "node:path";
-import {
-  handleOpenFileDialogDirectory,
-  handleOpenFileDialogFasta,
-  handleOpenFileDialogFastq,
-  handleOpenFileDialogGff,
-} from "./lib/dialogs";
+import { registerHandlers } from "./lib/ipcHandlers";
+import { createWindow, getAllWindows } from "./lib/windowManager";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
 }
 
-const userDataPath = app.getPath("userData");
-const settingsPath = path.join(userDataPath, "settings.json");
-const filesPath = path.join(userDataPath, "files.json");
-
-const loadFiles = () => {
-  try {
-    if (fs.existsSync(filesPath)) {
-      const data = fs.readFileSync(filesPath, "utf8");
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error("Error loading files:", error);
-  }
-  return {
-    fastq: { name: null, content: null },
-    fasta: { name: null, content: null },
-    gff: { name: null, content: null },
-    directory: { directory: null },
-    transpFile: "",
-    idFile: "",
-    advancedParams: {
-      minimumReadLength: "0",
-      maximumReadLength: "0",
-      trimmingQuality: "0",
-      minimumMapingQuality: "0",
-      numberOfThreadsForAnalysis: "0",
-      minConfidenceThreshold: "0",
-      maxNonEssentialGenes: "0",
-    },
-  };
-};
-
-ipcMain.handle("new-project", () => {
-  // por enquanto apenas limpa os dados, pq não tem backend para persistir novos projetos ainda
-  try {
-    fs.writeFileSync(
-      filesPath,
-      JSON.stringify({
-        fastq: { name: null, content: null },
-        fasta: { name: null, content: null },
-        gff: { name: null, content: null },
-        directory: { directory: null },
-        transpFile: "",
-        idFile: "",
-        advancedParams: {
-          minimumReadLength: "0",
-          maximumReadLength: "0",
-          trimmingQuality: "0",
-          minimumMapingQuality: "0",
-          numberOfThreadsForAnalysis: "0",
-          minConfidenceThreshold: "0",
-          maxNonEssentialGenes: "0",
-        },
-      }),
-    );
-  } catch (error) {
-    console.error("Erro ao criar novo projeto", error);
-  }
-});
-
-const saveFiles = (files: any) => {
-  try {
-    fs.writeFileSync(filesPath, JSON.stringify(files, null, 2));
-  } catch (error) {
-    console.error("Error saving files:", error);
-  }
-};
-ipcMain.handle("get-files", () => {
-  return loadFiles();
-});
-
-ipcMain.handle("set-files", (event, files) => {
-  saveFiles(files);
-  return true;
-});
-
-ipcMain.handle("get-advanced-params", () => {
-  const files = loadFiles();
-  return (
-    files.advancedParams || {
-      minimumReadLength: "0",
-      maximumReadLength: "0",
-      trimmingQuality: "0",
-      minimumMapingQuality: "0",
-      numberOfThreadsForAnalysis: "0",
-      minConfidenceThreshold: "0",
-      maxNonEssentialGenes: "0",
-    }
-  );
-});
-
-ipcMain.handle("set-advanced-params", (event, advancedParams) => {
-  try {
-    const files = loadFiles();
-    files.advancedParams = advancedParams;
-    saveFiles(files);
-    return true;
-  } catch (error) {
-    console.error("Error saving files", error);
-    return false;
-  }
-});
-
-const loadSettings = () => {
-  try {
-    if (fs.existsSync(settingsPath)) {
-      const data = fs.readFileSync(settingsPath, "utf8");
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error("Error loading settings:", error);
-  }
-  return { language: "en" };
-};
-
-const saveSettings = (settings: any) => {
-  try {
-    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
-  } catch (error) {
-    console.error("Error saving settings:", error);
-  }
-};
-
-ipcMain.handle("get-language", () => {
-  const settings = loadSettings();
-  return settings.language || "en";
-});
-
-ipcMain.handle("set-language", (event, language: string) => {
-  const settings = loadSettings();
-  settings.language = language;
-  saveSettings(settings);
-  return language;
-});
-
-ipcMain.handle("openFileDialogFastq", async () => {
-  return await handleOpenFileDialogFastq();
-});
-
-ipcMain.handle("openFileDialogGff", async () => {
-  return await handleOpenFileDialogGff();
-});
-
-ipcMain.handle("openFileDialogFasta", async () => {
-  return await handleOpenFileDialogFasta();
-});
-
-ipcMain.handle("openFileDialogDirectory", async () => {
-  return await handleOpenFileDialogDirectory();
-});
-
-const createWindow = () => {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 950,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: false,
-      contextIsolation: true,
-    },
-    autoHideMenuBar: true,
-    // Desable resizing for a fixed size window
-    resizable: false,
-  });
-
-  // and load the index.html of the app.
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-  } else {
-    mainWindow.loadFile(
-      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
-    );
-  }
-  // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
-};
+// Register all IPC handlers
+registerHandlers();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+app.on("ready", () => {
+  createWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -209,10 +30,7 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
+  if (getAllWindows().length === 0) {
     createWindow();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
