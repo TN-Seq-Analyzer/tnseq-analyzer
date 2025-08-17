@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { useFileHandler } from "@/hooks/useFileHandler";
+import { useInputAdvanced } from "@/hooks/useInputAdvanced";
 import { useTranslation } from "react-i18next";
 
 function ProcessSampleScreen() {
@@ -17,6 +18,7 @@ function ProcessSampleScreen() {
   });
   const { progress, isRunning, startMockAnalysis, cancelAnalysis } =
     useAnalysis();
+  const { values, onChange } = useInputAdvanced();
 
   const {
     files,
@@ -29,7 +31,6 @@ function ProcessSampleScreen() {
     idFile,
     setIdFile,
   } = useFileHandler();
-  console.log(files.fasta);
 
   return (
     <main className="flex flex-1 overflow-y-auto bg-[var(--bg-main)] pl-8 select-none lg:py-12 lg:pl-10">
@@ -74,11 +75,34 @@ function ProcessSampleScreen() {
         <section className="flex w-[72.5%] flex-col gap-4 py-6">
           <Title titleValue="advancedParameters" />
           <div className="mt-4 grid grid-cols-2 gap-5">
-            <InputAdvanced label={t("advancedParams.minReadLength")} />
-            <InputAdvanced label={t("advancedParams.maxReadLength")} />
-            <InputAdvanced label={t("advancedParams.trimQuality")} />
-            <InputAdvanced label={t("advancedParams.minMappingQuality")} />
             <InputAdvanced
+              value={values.minimumReadLength}
+              setValue={onChange}
+              name="minimumReadLength"
+              label={t("advancedParams.minReadLength")}
+            />
+            <InputAdvanced
+              value={values.maximumReadLength}
+              setValue={onChange}
+              name="maximumReadLength"
+              label={t("advancedParams.maxReadLength")}
+            />
+            <InputAdvanced
+              value={values.trimmingQuality}
+              setValue={onChange}
+              name="trimmingQuality"
+              label={t("advancedParams.trimQuality")}
+            />
+            <InputAdvanced
+              value={values.minimumMapingQuality}
+              setValue={onChange}
+              name="minimumMapingQuality"
+              label={t("advancedParams.minMappingQuality")}
+            />
+            <InputAdvanced
+              value={values.numberOfThreadsForAnalysis}
+              setValue={onChange}
+              name="numberOfThreadsForAnalysis"
               label={t("advancedParams.numThreads")}
               className="col-span-2"
             />
@@ -94,9 +118,17 @@ function ProcessSampleScreen() {
           </div>
           <div className="grid grid-cols-2 gap-5">
             <InputAdvanced
+              value={values.minConfidenceThreshold}
+              setValue={onChange}
+              name="minConfidenceThreshold"
               label={t("stringDbOptions.minConfidenceThreshold")}
             />
-            <InputAdvanced label={t("stringDbOptions.maxNonEssentialGenes")} />
+            <InputAdvanced
+              label={t("stringDbOptions.maxNonEssentialGenes")}
+              value={values.maxNonEssentialGenes}
+              setValue={onChange}
+              name="maxNonEssentialGenes"
+            />
           </div>
           <div>
             <Label className="font-poppins text-xs font-bold text-[var(--text-primaryGray)]">

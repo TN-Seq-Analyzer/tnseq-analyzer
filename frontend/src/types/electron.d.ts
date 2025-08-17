@@ -16,6 +16,8 @@ export interface IElectronFileAPI {
   getFiles: () => Promise<any>;
   setFiles: (files: any) => Promise<any>;
   newProject: () => Promise<any>;
+  getAdvancedParams: () => Promise<any>;
+  setAdvancedParams: (advancedParams: any) => Promise<boolean>;
 }
 
 declare global {

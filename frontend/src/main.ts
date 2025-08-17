@@ -34,6 +34,15 @@ const loadFiles = () => {
     directory: { directory: null },
     transpFile: "",
     idFile: "",
+    advancedParams: {
+      minimumReadLength: "0",
+      maximumReadLength: "0",
+      trimmingQuality: "0",
+      minimumMapingQuality: "0",
+      numberOfThreadsForAnalysis: "0",
+      minConfidenceThreshold: "0",
+      maxNonEssentialGenes: "0",
+    },
   };
 };
 
@@ -49,6 +58,15 @@ ipcMain.handle("new-project", () => {
         directory: { directory: null },
         transpFile: "",
         idFile: "",
+        advancedParams: {
+          minimumReadLength: "0",
+          maximumReadLength: "0",
+          trimmingQuality: "0",
+          minimumMapingQuality: "0",
+          numberOfThreadsForAnalysis: "0",
+          minConfidenceThreshold: "0",
+          maxNonEssentialGenes: "0",
+        },
       }),
     );
   } catch (error) {
@@ -70,6 +88,33 @@ ipcMain.handle("get-files", () => {
 ipcMain.handle("set-files", (event, files) => {
   saveFiles(files);
   return true;
+});
+
+ipcMain.handle("get-advanced-params", () => {
+  const files = loadFiles();
+  return (
+    files.advancedParams || {
+      minimumReadLength: "0",
+      maximumReadLength: "0",
+      trimmingQuality: "0",
+      minimumMapingQuality: "0",
+      numberOfThreadsForAnalysis: "0",
+      minConfidenceThreshold: "0",
+      maxNonEssentialGenes: "0",
+    }
+  );
+});
+
+ipcMain.handle("set-advanced-params", (event, advancedParams) => {
+  try {
+    const files = loadFiles();
+    files.advancedParams = advancedParams;
+    saveFiles(files);
+    return true;
+  } catch (error) {
+    console.error("Error saving files", error);
+    return false;
+  }
 });
 
 const loadSettings = () => {

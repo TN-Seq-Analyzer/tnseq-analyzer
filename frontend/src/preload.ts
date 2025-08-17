@@ -17,4 +17,7 @@ contextBridge.exposeInMainWorld("electronFile", {
   getFiles: () => ipcRenderer.invoke("get-files"),
   setFiles: (files: any) => ipcRenderer.invoke("set-files", files),
   newProject: () => ipcRenderer.invoke("new-project"),
+  getAdvancedParams: () => ipcRenderer.invoke("get-advanced-params"),
+  setAdvancedParams: (advancedParams: any) =>
+    ipcRenderer.invoke("set-advanced-params", advancedParams),
 });
