@@ -16,8 +16,13 @@ function ProcessSampleScreen() {
   const { t } = useTranslation("translation", {
     keyPrefix: "content.processSample",
   });
-  const { progress, isRunning, startMockAnalysis, cancelAnalysis } =
-    useAnalysis();
+  const {
+    progress,
+    isRunning,
+    // startMockAnalysis,
+    startAnalysis,
+    cancelAnalysis,
+  } = useAnalysis();
   const { values, onChange } = useInputAdvanced();
 
   const {
@@ -31,6 +36,10 @@ function ProcessSampleScreen() {
     idFile,
     setIdFile,
   } = useFileHandler();
+
+  const handleStartAnalysis = () => {
+    startAnalysis(files, transpFile);
+  };
 
   return (
     <main className="flex flex-1 overflow-y-auto bg-[var(--bg-main)] pl-8 select-none lg:py-12 lg:pl-10">
@@ -54,6 +63,7 @@ function ProcessSampleScreen() {
           disabled
           handleOpen={() => handleOpenGff("gff")}
           fileName={files.gff.name}
+          disabledButton
         />
         <InputManual
           defaultFileName="sequenceTransp"
@@ -64,6 +74,7 @@ function ProcessSampleScreen() {
           defaultFileName="idOrganism"
           value={idFile}
           setValue={setIdFile}
+          disable
         />
 
         <ChooseFile
@@ -71,6 +82,7 @@ function ProcessSampleScreen() {
           disabled
           handleOpen={() => handleOpenDirectory("directory")}
           fileName={files.directory.directory}
+          disabledButton
         />
         <section className="flex w-[72.5%] flex-col gap-4 py-6">
           <Title titleValue="advancedParameters" />
@@ -139,7 +151,7 @@ function ProcessSampleScreen() {
           <div className="grid grid-cols-2 gap-3">
             <Button
               className="font-inter h-[30px] cursor-pointer bg-[#0D80F2] text-xs text-white hover:bg-[#63a5e7]"
-              onClick={startMockAnalysis}
+              onClick={handleStartAnalysis}
               disabled={isRunning}
             >
               {t("button.startAnalysis")}

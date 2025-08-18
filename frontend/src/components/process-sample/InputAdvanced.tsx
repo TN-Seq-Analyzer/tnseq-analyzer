@@ -46,7 +46,9 @@ function InputAdvanced({
         onInput={handleInput}
         name={name}
         type="number"
-        className="h-[28px] w-full border-[1px] border-gray-200 bg-white"
+        className="h-[28px] w-full border-[1px] border-gray-200 bg-white/50"
+        // desabilitando momentaneamente
+        disabled={true}
       />
     </div>
   );
