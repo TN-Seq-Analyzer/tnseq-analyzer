@@ -63,6 +63,7 @@ function ProcessSampleScreen() {
           disabled
           handleOpen={() => handleOpenGff("gff")}
           fileName={files.gff.name}
+          disabledButton
         />
         <InputManual
           defaultFileName="sequenceTransp"
@@ -73,6 +74,7 @@ function ProcessSampleScreen() {
           defaultFileName="idOrganism"
           value={idFile}
           setValue={setIdFile}
+          disable
         />
 
         <ChooseFile
@@ -80,6 +82,7 @@ function ProcessSampleScreen() {
           disabled
           handleOpen={() => handleOpenDirectory("directory")}
           fileName={files.directory.directory}
+          disabledButton
         />
         <section className="flex w-[72.5%] flex-col gap-4 py-6">
           <Title titleValue="advancedParameters" />

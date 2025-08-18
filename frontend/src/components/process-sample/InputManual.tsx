@@ -7,11 +7,13 @@ function InputManual({
   defaultFileName,
   value,
   setValue,
+  disable,
 }: {
   fileName?: string;
   defaultFileName?: string;
   value: string;
   setValue: (value: string) => void;
+  disable?: boolean;
 }) {
   const fileNameToDisplay = fileName ? fileName : defaultFileName;
   const { t } = useTranslation("translation", {
@@ -30,6 +32,7 @@ function InputManual({
         onChange={(e) => {
           setValue(e.target.value);
         }}
+        disabled={disable}
       />
     </div>
   );
