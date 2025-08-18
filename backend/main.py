@@ -79,7 +79,9 @@ def ping():
 
 @app.post("/process-fastq/")
 async def process_fastq(
-    file: UploadFile = File(...), adapter: Annotated[str, Form()] = ""
+    file: UploadFile = File(...),
+    adapter: Annotated[str, Form()] = "",
+    output_dir: Annotated[str, Form()] = "",
 ):
     if not adapter:
         # Raise error if adapter is not provided
@@ -87,7 +89,7 @@ async def process_fastq(
 
     with tempfile.TemporaryDirectory() as tmpdir:
         input_path = Path(tmpdir) / file.filename
-        output_path = Path(tmpdir) / "trimmed.fastq"
+        output_path = Path(output_dir if output_dir else tmpdir) / "trimmed.fastq"
 
         # Saving uploaded file
         with open(input_path, "wb") as f:
@@ -112,7 +114,9 @@ async def process_fastq(
 
 
 @app.post("/process-trimgalore/")
-async def process_trimgalore(file: UploadFile = File(...)):
+async def process_trimgalore(
+    file: UploadFile = File(...), output_dir: Annotated[str, Form()] = ""
+):
     with tempfile.TemporaryDirectory() as tmpdir:
         input_path = Path(tmpdir) / file.filename
 
@@ -135,7 +139,9 @@ async def process_trimgalore(file: UploadFile = File(...)):
         if report_file:
             with open(report_file[0], "r") as f:
                 report_content = f.read()
-                stats_json = parse_trimgalore_report(report_content)
+                shutil.copy(report_file[0], Path(output_dir))
+
+            stats_json = parse_trimgalore_report(report_content)
 
     return {"trimgalore_stats": stats_json}
 
