@@ -28,18 +28,21 @@ export function setLastResult(result: ProcessResult) {
   subscribers.forEach((cb) => cb(result));
 }
 
-export async function processFastq(files: FileData, adapter: string) {
+export async function processFastq(
+  files: FileData,
+  adapter: string,
+  outputDir?: string,
+) {
   if (!files.fastq.content || !files.fastq.name) {
     throw new Error("Fastq file not provided");
   }
 
   const formData = new FormData();
-  // converte pra arquivo pra nao ter o trabalho de refatorar as outras partes
   const blob = new Blob([files.fastq.content], { type: "text/plain" });
   formData.append("file", blob, files.fastq.name);
   formData.append("adapter", adapter);
+  formData.append("output_dir", outputDir);
 
-  // nao adicionei o promiseAll pra nao dar b.o
   const response = await fetch(`${BASE_URL}/process-fastq`, {
     method: "POST",
     body: formData,
@@ -55,7 +58,7 @@ export async function processFastq(files: FileData, adapter: string) {
   return result;
 }
 
-export async function processTimGalore(files: FileData) {
+export async function processTimGalore(files: FileData, outputDir?: string) {
   if (!files.fastq.content || !files.fastq.name) {
     throw new Error("Fastq file not provided");
   }
@@ -63,6 +66,7 @@ export async function processTimGalore(files: FileData) {
   const formData = new FormData();
   const blob = new Blob([files.fastq.content], { type: "text/plain" });
   formData.append("file", blob, files.fastq.name);
+  formData.append("output_dir", outputDir);
 
   const response = await fetch(`${BASE_URL}/process-trimgalore`, {
     method: "POST",
