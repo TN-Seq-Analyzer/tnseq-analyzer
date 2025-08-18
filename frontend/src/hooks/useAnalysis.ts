@@ -1,4 +1,8 @@
-import { processFastq } from "@/services/processSampleService";
+import {
+  processFastq,
+  processTimGalore,
+  setLastResult,
+} from "@/services/processSampleService";
 import type { FileData } from "@/types/index";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,7 +14,6 @@ export function useAnalysis() {
   });
   const [progress, setProgress] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [lastResult, setLastResult] = useState<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   function cancelAnalysis() {
@@ -60,13 +63,19 @@ export function useAnalysis() {
         setProgress((prev) => Math.min(prev + 5, 90));
       }, 200);
 
-      const result = await processFastq(files, transpSeq);
+      const [fastqResult, trimGaloreResult] = await Promise.all([
+        processFastq(files, transpSeq),
+        processTimGalore(files),
+      ]);
 
       clearInterval(progressInterval);
 
       setProgress(100);
       setIsRunning(false);
-      setLastResult(result);
+      console.log("Fastq Result:", fastqResult);
+      console.log("Trim Galore Result:", trimGaloreResult);
+      console.log("Updating lastResult");
+      setLastResult({ fastqResult, trimGaloreResult });
 
       toast.success(t("analysis.completeToast"));
     } catch (error) {
@@ -99,6 +108,5 @@ export function useAnalysis() {
     // startMockAnalysis,
     startAnalysis,
     cancelAnalysis,
-    lastResult,
   };
 }
