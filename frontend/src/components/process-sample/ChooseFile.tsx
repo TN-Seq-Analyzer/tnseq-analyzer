@@ -7,6 +7,7 @@ interface ChooseFileProps {
   fileName?: string;
   defaultFileName?: string;
   disabled?: boolean;
+  disabledButton?: boolean;
   handleOpen?: () => Promise<void>;
 }
 
@@ -14,6 +15,7 @@ function ChooseFile({
   fileName,
   defaultFileName,
   disabled,
+  disabledButton = false,
   handleOpen,
 }: ChooseFileProps) {
   const fileNameToDisplay = fileName ? fileName : defaultFileName;
@@ -32,6 +34,7 @@ function ChooseFile({
           value={!fileName ? t(`file.${fileNameToDisplay}`) : fileName}
         />
         <Button
+          disabled={disabledButton}
           onClick={handleOpen}
           className="font-inter h-[30px] cursor-pointer rounded-sm text-xs font-normal select-none"
         >
