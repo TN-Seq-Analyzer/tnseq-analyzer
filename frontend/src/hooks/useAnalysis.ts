@@ -72,9 +72,6 @@ export function useAnalysis() {
 
       setProgress(100);
       setIsRunning(false);
-      console.log("Fastq Result:", fastqResult);
-      console.log("Trim Galore Result:", trimGaloreResult);
-      console.log("Updating lastResult");
       setLastResult({ fastqResult, trimGaloreResult });
 
       toast.success(t("analysis.completeToast"));
