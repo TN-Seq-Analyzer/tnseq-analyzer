@@ -84,7 +84,18 @@
         "complete": "Completo",
         "completeToast": "Análise finalizada com sucesso!",
         "cancelledToast": "Análise cancelada!"
+      },
+      "validation": {
+        "noFastq": "Por favor, selecione um arquivo FASTQ",
+        "noTranspSeq": "Por favor, forneça a sequência do transposon"
+      },
+      "errors": {
+        "analysisFailed": "Erro na análise: {{message}}"
       }
+    },
+    "interactiveAnalysis": {
+      "resultTitle": "Resultado (JSON cru)",
+      "noResult": "Nenhum resultado ainda."
     }
   },
   "language": {
