@@ -16,9 +16,6 @@ function InteractiveAnalysisScreen() {
     return unsubscribe;
   }, []);
 
-  console.log("InteractiveAnalysisScreen rendered");
-  console.log(results);
-
   const displayed = results ?? null;
 
   return (
