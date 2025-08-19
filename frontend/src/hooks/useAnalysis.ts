@@ -64,8 +64,8 @@ export function useAnalysis() {
       }, 200);
 
       const [fastqResult, trimGaloreResult] = await Promise.all([
-        processFastq(files, transpSeq),
-        processTimGalore(files),
+        processFastq(files, transpSeq, files.directory?.directory || undefined),
+        processTimGalore(files, files.directory?.directory || undefined),
       ]);
 
       clearInterval(progressInterval);

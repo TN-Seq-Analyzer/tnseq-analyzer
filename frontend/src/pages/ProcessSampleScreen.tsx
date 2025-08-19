@@ -82,7 +82,6 @@ function ProcessSampleScreen() {
           disabled
           handleOpen={() => handleOpenDirectory("directory")}
           fileName={files.directory.directory}
-          disabledButton
         />
         <section className="flex w-[72.5%] flex-col gap-4 py-6">
           <Title titleValue="advancedParameters" />
