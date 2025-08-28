@@ -17,7 +17,7 @@ registerHandlers();
 
 const startBackend = () => {
   const script = path.join(__dirname, "../../../backend/main.py");
-  pythonProcess = spawn("python", [script]);
+  pythonProcess = spawn("cd ../backend && uv run main.py" , { shell: true });
 
   pythonProcess.stdout.on("data", (data) => {
     console.log(`Python: ${data}`);
