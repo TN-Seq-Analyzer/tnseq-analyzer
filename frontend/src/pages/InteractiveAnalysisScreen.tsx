@@ -1,20 +1,9 @@
-import {
-  getLastResult,
-  subscribeToResults,
-} from "@/services/processSampleService";
-import { useEffect, useState } from "react";
+import { useAnalysisContext } from "@/context/AnalysisContext";
 import { useTranslation } from "react-i18next";
 
 function InteractiveAnalysisScreen() {
   const { t } = useTranslation("translation");
-  const [results, setResults] = useState<any | null>(() => getLastResult());
-
-  useEffect(() => {
-    const unsubscribe = subscribeToResults((data) => {
-      setResults(data);
-    });
-    return unsubscribe;
-  }, []);
+  const { results } = useAnalysisContext();
 
   const displayed = results ?? null;
 
