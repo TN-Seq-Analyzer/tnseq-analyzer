@@ -41,7 +41,10 @@ export async function processFastq(
   const blob = new Blob([files.fastq.content], { type: "text/plain" });
   formData.append("file", blob, files.fastq.name);
   formData.append("adapter", adapter);
-  formData.append("output_dir", outputDir);
+  if (outputDir) {
+    formData.append("output_dir", outputDir);
+  }
+  console.log("Output dir:", outputDir);
 
   const response = await fetch(`${BASE_URL}/process-fastq`, {
     method: "POST",
@@ -66,7 +69,9 @@ export async function processTimGalore(files: FileData, outputDir?: string) {
   const formData = new FormData();
   const blob = new Blob([files.fastq.content], { type: "text/plain" });
   formData.append("file", blob, files.fastq.name);
-  formData.append("output_dir", outputDir);
+  if (outputDir) {
+    formData.append("output_dir", outputDir);
+  }
 
   const response = await fetch(`${BASE_URL}/process-trimgalore`, {
     method: "POST",
