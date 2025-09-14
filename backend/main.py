@@ -5,7 +5,7 @@ from typing import Annotated
 import uvicorn
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form
+from fastapi import FastAPI, Form
 import subprocess
 import tempfile
 import shutil
@@ -71,6 +71,36 @@ def parse_trimgalore_report(report: str) -> dict:
                 }
     return stats
 
+def apply_bowtie2(
+    reference_file: str, 
+    index_path: str, 
+    read_path: str, 
+    result_path: str,
+    build_params_list: list[str], 
+    params_list: list[str],
+):
+    bowtie2_build_command = [
+        "bowtie2-build",
+        reference_file,
+        index_path,
+        *build_params_list,
+    ]
+    subprocess.run(bowtie2_build_command, capture_output=True, text=True)
+
+    bowtie2_command = [
+        'bowtie2',
+        '-x',
+        index_path,
+        '-U',
+        read_path,
+        '-S',
+        result_path,
+        *params_list,
+    ]
+
+    subprocess.run(bowtie2_command, capture_output=True, text=True)
+    
+
 
 @app.get("/ping")
 def ping():
@@ -79,60 +109,80 @@ def ping():
 
 @app.post("/process-fastq/")
 async def process_fastq(
-    file: UploadFile = File(...),
-    adapter: Annotated[str, Form()] = "",
-    output_dir: Annotated[str, Form()] = "",
+    reference_file: Annotated[str, Form()],
+    read_file: Annotated[str, Form()],
+    adapter: Annotated[str, Form()],
+    output_dir: Annotated[str, Form()],
+    include_tmp_files: Annotated[bool, Form()] = False, 
+    bowtie2_build_params: Annotated[str, Form()] = "",
+    bowtie2_params: Annotated[str, Form()] = "",
 ):
-    if not adapter:
-        # Raise error if adapter is not provided
-        raise HTTPException(status_code=400, detail="Adapter sequence is required.")
-
     with tempfile.TemporaryDirectory() as tmpdir:
-        input_path = Path(tmpdir) / file.filename
-        output_path = Path(output_dir if output_dir else tmpdir) / "trimmed.fastq"
-
-        # Saving uploaded file
-        with open(input_path, "wb") as f:
-            shutil.copyfileobj(file.file, f)
+        trimmed_file_path = Path(output_dir if output_dir else tmpdir) / "trimmed.fastq"
+        bowtie2_build_params_list = bowtie2_build_params.split(",") if bowtie2_build_params else []
+        bowtie2_params_list = bowtie2_params.split(",") if bowtie2_params else []
 
         command = [
             "cutadapt",
             "-a",
             adapter,
             "-o",
-            str(output_path),
-            str(input_path),
+            str(trimmed_file_path),
+            str(read_file),
         ]
 
-        # Execute cutadapt and capture statistics
         result = subprocess.run(command, capture_output=True, text=True)
 
         # The cutadapt log/statistics comes from stdout
         cutadapt_stats = parse_cutadapt_log(result.stdout)
+
+        apply_bowtie2(
+            reference_file=reference_file,
+            index_path=str(Path(tmpdir) / "index"),
+            read_path=str(trimmed_file_path),
+            result_path=str(Path(output_dir) / "result.sam"),
+            build_params_list=bowtie2_build_params_list,
+            params_list=bowtie2_params_list
+        )
+
+        if include_tmp_files:
+            shutil.copytree(Path(tmpdir), Path(output_dir) / "tmp", dirs_exist_ok=True)
 
     return {"cutadapt_stats": cutadapt_stats}
 
 
 @app.post("/process-trimgalore/")
 async def process_trimgalore(
-    file: UploadFile = File(...), output_dir: Annotated[str, Form()] = ""
+    reference_file: Annotated[str, Form()],
+    read_file: Annotated[str, Form()],
+    output_dir: Annotated[str, Form()] = "",
+    include_tmp_files: Annotated[bool, Form()] = False,
+    bowtie2_build_params: Annotated[str, Form()] = "",
+    bowtie2_params: Annotated[str, Form()] = "",
 ):
     with tempfile.TemporaryDirectory() as tmpdir:
-        input_path = Path(tmpdir) / file.filename
+        bowtie2_build_params_list = bowtie2_build_params.split(",") if bowtie2_build_params else []
+        bowtie2_params_list = bowtie2_params.split(",") if bowtie2_params else []
 
-        with open(input_path, "wb") as f:
-            shutil.copyfileobj(file.file, f)
-
-        command = [
+        trim_galore_command = [
             "trim_galore",
             "--quality",
             "20",  # cut basis < Q20
             "--fastqc",  # run fastqc automatically
             "--output_dir",
             str(tmpdir),
-            str(input_path),
+            read_file,
         ]
-        subprocess.run(command, capture_output=True, text=True)
+        subprocess.run(trim_galore_command, capture_output=True, text=True)
+
+        apply_bowtie2(
+            reference_file=reference_file,
+            index_path=str(Path(tmpdir) / "index"),
+            read_path=str(Path(tmpdir) / (Path(read_file).name.split(".")[0] + "_trimmed.fq")),
+            result_path=str(Path(output_dir) / "result.sam"),
+            build_params_list=bowtie2_build_params_list,
+            params_list=bowtie2_params_list,
+        )
 
         report_file = list(Path(tmpdir).glob("*_trimming_report.txt"))
         stats_json = {}
@@ -142,7 +192,9 @@ async def process_trimgalore(
                 shutil.copy(report_file[0], Path(output_dir))
 
             stats_json = parse_trimgalore_report(report_content)
-
+        
+        if include_tmp_files:
+            shutil.copytree(Path(tmpdir), Path(output_dir) / "tmp", dirs_exist_ok=True)
     return {"trimgalore_stats": stats_json}
 
 
