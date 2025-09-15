@@ -3,9 +3,10 @@ import { FileData } from "../types/index";
 
 export function useFileHandler() {
   const [files, setFiles] = useState<FileData>({
-    fastq: { name: null, content: null },
-    fasta: { name: null, content: null },
-    gff: { name: null, content: null },
+    projectName: "",
+  fastq: { name: null, content: null, path: null },
+  fasta: { name: null, content: null, path: null },
+  gff: { name: null, content: null, path: null },
     directory: { directory: null },
     transpFile: "",
     idFile: "",
@@ -68,7 +69,7 @@ export function useFileHandler() {
       setFiles((prev) => {
         const updated = {
           ...prev,
-          [field]: { name: fileName, content: fileContent },
+          [field]: { name: fileName, content: fileContent ?? null, path: filePath },
         };
         persistFiles(updated);
         return updated;
@@ -115,6 +116,17 @@ export function useFileHandler() {
     });
   };
 
+  const updateProjectName = (value: string) => {
+    setFiles((prev) => {
+      const updated = { ...prev, projectName: value };
+      persistFiles(updated);
+      return updated;
+    });
+    if (window.electronFile?.setProjectName) {
+      window.electronFile.setProjectName(value);
+    }
+  };
+
   return {
     files,
     handleOpenFastq,
@@ -125,5 +137,6 @@ export function useFileHandler() {
     setTranspFile: updateTranspFile,
     idFile,
     setIdFile: updateIdFile,
+    setProjectName: updateProjectName,
   };
 }

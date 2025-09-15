@@ -2,7 +2,19 @@
   "header": {
     "link": {
       "help": "Ajuda",
-      "about": "Sobre"
+      "about": "Sobre",
+      "exportProject": {
+        "button": "Exportar projeto",
+        "success": "Projeto exportado com sucesso!",
+        "error": "Falha ao exportar o projeto"
+      },
+      "importProject": {
+        "button": "Carregar Projeto",
+        "success": "Projeto importado com sucesso!",
+        "error": "Falha ao importar o projeto",
+        "invalid": "Arquivo de projeto inválido",
+        "dialogTitle": "Carregar projeto"
+      }
     }
   },
   "content": {

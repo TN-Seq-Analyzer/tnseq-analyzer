@@ -28,12 +28,13 @@ function BtnModal() {
     setNameProject("");
   };
 
-  const handleNewProject = () => {
-    window.electronFile.newProject();
+  const handleNewProject = (name: string) => {
+    window.electronFile.newProject(name);
   };
 
   const handleSubmit = () => {
     if (nameProject.trim().length >= 2) {
+      handleNewProject(nameProject.trim());
       setOpen(false);
       toast.success(`${t("toastSuccess")}`);
       navigate("/processSample");
@@ -88,7 +89,6 @@ function BtnModal() {
               disabled={nameProject.trim().length < 2}
               onClick={() => {
                 handleSubmit();
-                handleNewProject();
               }}
             >
               {t("createButton")}

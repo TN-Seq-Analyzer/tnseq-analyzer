@@ -1,7 +1,6 @@
 import {
   processFastq,
   processTimGalore,
-  setLastResult,
 } from "@/services/processSampleService";
 import type { FileData } from "@/types/index";
 import { useEffect, useRef, useState } from "react";
@@ -72,9 +71,10 @@ export function useAnalysis() {
 
       setProgress(100);
       setIsRunning(false);
-      setLastResult({ fastqResult, trimGaloreResult });
 
       toast.success(t("analysis.completeToast"));
+
+      return { fastqResult, trimGaloreResult };
     } catch (error) {
       clearInterval(intervalRef.current!);
       setIsRunning(false);
@@ -84,7 +84,6 @@ export function useAnalysis() {
         error instanceof Error
           ? error.message
           : t("errors.analysisFailed", { message: "Erro desconhecido" });
-      // If error is an Error, use interpolation; else show generic message
       if (error instanceof Error) {
         toast.error(t("errors.analysisFailed", { message: error.message }));
       } else {

@@ -11,6 +11,7 @@ import { useAnalysis } from "@/hooks/useAnalysis";
 import { useFileHandler } from "@/hooks/useFileHandler";
 import { useInputAdvanced } from "@/hooks/useInputAdvanced";
 import { useTranslation } from "react-i18next";
+import { useAnalysisContext } from "@/context/AnalysisContext";
 
 function ProcessSampleScreen() {
   const { t } = useTranslation("translation", {
@@ -23,7 +24,8 @@ function ProcessSampleScreen() {
     startAnalysis,
     cancelAnalysis,
   } = useAnalysis();
-  const { values, onChange } = useInputAdvanced();
+  const { onChange, values } = useInputAdvanced();
+  const { setResults } = useAnalysisContext();
 
   const {
     files,
@@ -37,8 +39,11 @@ function ProcessSampleScreen() {
     setIdFile,
   } = useFileHandler();
 
-  const handleStartAnalysis = () => {
-    startAnalysis(files, transpFile);
+  const handleStartAnalysis = async () => {
+    const result = await startAnalysis(files, transpFile);
+    if (result) {
+      setResults(result);
+    }
   };
 
   return (
