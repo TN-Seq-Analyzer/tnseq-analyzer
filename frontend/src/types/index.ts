@@ -1,5 +1,5 @@
-// Types for file management
 export interface FileData {
+  projectName: string;
   fastq: { name: string | null; content: string | null };
   fasta: { name: string | null; content: string | null };
   gff: { name: string | null; content: string | null };

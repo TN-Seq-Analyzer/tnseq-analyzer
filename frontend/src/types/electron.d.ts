@@ -14,7 +14,9 @@ export interface IElectronFileAPI {
   openFileDialogDirectory: FileDialogResultFunction;
   getFiles: () => Promise<FileData>;
   setFiles: (files: FileData) => Promise<boolean>;
-  newProject: () => Promise<void>;
+  newProject: (name: string) => Promise<void>;
+  setProjectName: (name: string) => Promise<boolean>;
+  exportProject: () => Promise<boolean>;
   getAdvancedParams: () => Promise<AdvancedParams>;
   setAdvancedParams: (advancedParams: AdvancedParams) => Promise<boolean>;
 }
