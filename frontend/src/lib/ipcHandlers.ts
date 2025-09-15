@@ -11,7 +11,10 @@ import {
   loadFiles,
   saveFiles,
   setAdvancedParams,
+  setProjectName,
+  exportProjectToPath,
 } from "./fileManager";
+import { dialog } from "electron";
 import { getLanguage, setLanguage } from "./languageSettingsManager";
 
 const registerFileHandlers = (): void => {
@@ -24,8 +27,26 @@ const registerFileHandlers = (): void => {
     return true;
   });
 
-  ipcMain.handle("new-project", () => {
-    createNewProject();
+  ipcMain.handle("new-project", (_event, name: string) => {
+    createNewProject(name);
+  });
+
+  ipcMain.handle("set-project-name", (_event, name: string) => {
+    return setProjectName(name);
+  });
+
+  ipcMain.handle("export-project", async () => {
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      defaultPath: `${loadFiles().projectName || "project"}.json`,
+      filters: [
+        {
+          name: "JSON",
+          extensions: ["json"],
+        },
+      ],
+    });
+    if (canceled || !filePath) return false;
+    return exportProjectToPath(filePath);
   });
 
   ipcMain.handle("get-advanced-params", () => {

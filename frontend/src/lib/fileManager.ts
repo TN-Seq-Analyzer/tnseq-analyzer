@@ -9,6 +9,7 @@ const getFilesPath = (): string => {
 };
 
 const getDefaultFileData = (): FileData => ({
+  projectName: "",
   fastq: { name: null, content: null },
   fasta: { name: null, content: null },
   gff: { name: null, content: null },
@@ -75,10 +76,41 @@ export const setAdvancedParams = (advancedParams: AdvancedParams): boolean => {
   }
 };
 
-export const createNewProject = (): void => {
+export const createNewProject = (name: string): void => {
   try {
-    saveFiles(getDefaultFileData());
+    const data = getDefaultFileData();
+    data.projectName = name;
+    saveFiles(data);
   } catch (error) {
     console.error("Erro ao criar novo projeto:", error);
+  }
+};
+
+export const setProjectName = (name: string): boolean => {
+  try {
+    const files = loadFiles();
+    files.projectName = name;
+    saveFiles(files);
+    return true;
+  } catch (error) {
+    console.error("Erro ao salvar nome do projeto:", error);
+    return false;
+  }
+};
+
+export const exportProjectToPath = (destPath: string): boolean => {
+  try {
+    const files = loadFiles();
+    const projectName =
+      files.projectName && files.projectName.trim() !== "" && files.projectName;
+
+    const finalPath = destPath.endsWith(".json")
+      ? destPath
+      : path.join(destPath, `${projectName}.json`);
+    fs.writeFileSync(finalPath, JSON.stringify(files, null, 2));
+    return true;
+  } catch (error) {
+    console.error("Erro ao exportar projeto:", error);
+    return false;
   }
 };

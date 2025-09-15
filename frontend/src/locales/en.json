@@ -2,7 +2,12 @@
   "header": {
     "link": {
       "help": "Help",
-      "about": "About"
+      "about": "About",
+      "exportProject": {
+        "button": "Export project",
+        "success": "Project exported successfully!",
+        "error": "Failed to export project"
+      }
     }
   },
   "content": {
