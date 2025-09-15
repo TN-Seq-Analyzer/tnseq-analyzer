@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld("electronFile", {
   setProjectName: (name: string) =>
     ipcRenderer.invoke("set-project-name", name),
   exportProject: () => ipcRenderer.invoke("export-project"),
+  importProject: () => ipcRenderer.invoke("import-project"),
   getAdvancedParams: () => ipcRenderer.invoke("get-advanced-params"),
   setAdvancedParams: (advancedParams: any) =>
     ipcRenderer.invoke("set-advanced-params", advancedParams),

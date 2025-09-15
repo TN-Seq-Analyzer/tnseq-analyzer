@@ -17,6 +17,11 @@ export interface IElectronFileAPI {
   newProject: (name: string) => Promise<void>;
   setProjectName: (name: string) => Promise<boolean>;
   exportProject: () => Promise<boolean>;
+  importProject: () => Promise<{
+    success: boolean;
+    error?: string;
+    data?: FileData;
+  }>;
   getAdvancedParams: () => Promise<AdvancedParams>;
   setAdvancedParams: (advancedParams: AdvancedParams) => Promise<boolean>;
 }
