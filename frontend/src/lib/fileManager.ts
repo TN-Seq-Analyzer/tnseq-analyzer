@@ -114,3 +114,59 @@ export const exportProjectToPath = (destPath: string): boolean => {
     return false;
   }
 };
+
+export interface ImportResult {
+  success: boolean;
+  error?: string;
+  data?: FileData;
+}
+
+export const importProjectFromPath = (sourcePath: string): ImportResult => {
+  try {
+    if (!fs.existsSync(sourcePath)) {
+      return { success: false, error: "FILE_NOT_FOUND" };
+    }
+    const raw = fs.readFileSync(sourcePath, "utf8");
+    const json = JSON.parse(raw);
+
+    const requiredTop = [
+      "fastq",
+      "fasta",
+      "gff",
+      "directory",
+      "advancedParams",
+    ];
+    for (const key of requiredTop) {
+      if (!(key in json)) {
+        return { success: false, error: `MISSING_FIELD_${key}` };
+      }
+    }
+
+    const merged: FileData = {
+      projectName: json.projectName || "",
+      fastq: json.fastq || { name: null, content: null },
+      fasta: json.fasta || { name: null, content: null },
+      gff: json.gff || { name: null, content: null },
+      directory: json.directory || { directory: null },
+      transpFile: json.transpFile || "",
+      idFile: json.idFile || "",
+      advancedParams: {
+        minimumReadLength: json.advancedParams?.minimumReadLength ?? 0,
+        maximumReadLength: json.advancedParams?.maximumReadLength ?? 0,
+        trimmingQuality: json.advancedParams?.trimmingQuality ?? 0,
+        minimumMapingQuality: json.advancedParams?.minimumMapingQuality ?? 0,
+        numberOfThreadsForAnalysis:
+          json.advancedParams?.numberOfThreadsForAnalysis ?? 0,
+        minConfidenceThreshold:
+          json.advancedParams?.minConfidenceThreshold ?? 0,
+        maxNonEssentialGenes: json.advancedParams?.maxNonEssentialGenes ?? 0,
+      },
+    };
+
+    saveFiles(merged);
+    return { success: true, data: merged };
+  } catch (error) {
+    console.error("Erro ao importar projeto:", error);
+    return { success: false, error: "INVALID_JSON" };
+  }
+};
