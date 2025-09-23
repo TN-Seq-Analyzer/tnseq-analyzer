@@ -22,10 +22,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-file_extension_handdler = FileExtensionHandler()
+file_extension_handler = FileExtensionHandler()
 job_manager = JobManager()
 app.include_router(
-    router=job_router(file_extension_handdler, job_manager),
+    router=job_router(file_extension_handler, job_manager),
     prefix="/jobs",
 )
 
