@@ -1,19 +1,26 @@
+import asyncio
+import logging
+import queue
+from typing import cast
+
 from fastapi import APIRouter, BackgroundTasks, WebSocket
 from pydantic.types import UUID4
 from starlette import status
 from starlette.responses import JSONResponse
+from starlette.websockets import WebSocketDisconnect
 
 from file_extension_handler import FileExtensionHandler, PipelineEntryStage
 from job_manager import JobManager
-from queue_manager import QueueManager
 from schemas import JobRequestModel
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def job_router(
-        file_extension_handler: FileExtensionHandler,
-        job_manager: JobManager,
-        queue_manager: QueueManager,
-    ):
+    file_extension_handler: FileExtensionHandler,
+    job_manager: JobManager,
+):
     router = APIRouter(tags=["Jobs"])
 
     @router.post("")
@@ -23,7 +30,7 @@ def job_router(
     ) -> JSONResponse:
         file_type_to_paths = {}
         cardinality_map = {}
-        
+
         for file in request.input_files:
             file_type = file_extension_handler.get_file_type(file)
             if not file_type:
@@ -50,17 +57,16 @@ def job_router(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 content={
                     "message": (
-                        "The provided files do not match any supported " 
+                        "The provided files do not match any supported "
                         "formats or combinations."
                     ),
                 },
             )
 
         job_id = await job_manager.create_job()
-        await queue_manager.add_job(job_id)
 
         background_tasks.add_task(
-            job_manager.process, 
+            job_manager.process,
             job_id,
             entry_stage,
             file_type_to_paths,
@@ -68,17 +74,41 @@ def job_router(
             request.options,
         )
 
-
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
             content={"job_id": str(job_id)},
         )
 
-    @router.websocket("/jobs/{job_id}")
+    @router.websocket("/{job_id}")
     async def get_job_status(
         websocket: WebSocket,
         job_id: UUID4,
     ):
         await websocket.accept()
-    return router
+        status_queue = await job_manager.get_status_queue(job_id)
+        if not status_queue:
+            await websocket.send_json(
+                {
+                    "status": "error",
+                    "data": {
+                        "message": "job not found",
+                    },
+                }
+            )
+        status_queue = cast(queue.Queue, status_queue)
+        try:
+            while True:
+                try:
+                    status = status_queue.get_nowait()
+                    await websocket.send_json(status.model_dump())
+                    status_queue.task_done()
+                    if not status.success:
+                        await websocket.close()
+                        await job_manager.delete(job_id)
+                        break
+                except queue.Empty:
+                    await asyncio.sleep(0.5)
+        except WebSocketDisconnect:
+            logger.info("INFO: Client Websocket disconnected")
 
+    return router
