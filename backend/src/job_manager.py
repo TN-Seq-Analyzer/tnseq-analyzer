@@ -187,7 +187,17 @@ class JobManager:
             step=JobStep.TRIMMING,
         )
 
+        if not options.adapter:
+            self.__update_status(
+                "ERROR: Missing adapter",
+                job,
+                logger.error,
+                False,
+            )
+            return
+
         trimmed_reads_dir = Path(output_dir) / "trimming" / "trimmed_reads"
+        trimmed_reads_dir.mkdir(parents=True, exist_ok=True)
         self.__update_status(
             "INFO: Trimming with cutadapt",
             job,
@@ -225,7 +235,7 @@ class JobManager:
             res = subprocess.run(cmd, capture_output=True, text=True)
             if res.returncode != 0:
                 self.__update_status(
-                    "ERROR: FastQC failed:\n"
+                    "ERROR: Cutadapt failed:\n"
                     f"stdout:\n{res.stdout}\n"
                     f"stderr:\n{res.stderr}",
                     job,
@@ -251,6 +261,28 @@ class JobManager:
             job,
             logger.info,
         )
+
+    def __parse_trimgalore_report(self, report: str) -> dict:
+        stats = {}
+        patterns = {
+            "reads_processed": r"Reads processed:\s+([\d,]+)",
+            "reads_with_adapters": r"Reads with adapters:\s+([\d,]+) \(([\d.]+)%",
+            "reads_written": r"Reads written \(passing filters\):\s+([\d,]+) \(([\d.]+)%",
+            "total_bp": r"Total basepairs processed:\s+([\d,]+)",
+            "written_bp": r"Total written \(filtered\):\s+([\d,]+) \(([\d.]+)%",
+        }
+
+        for key, pattern in patterns.items():
+            match = re.search(pattern, report)
+            if match:
+                if len(match.groups()) == 1:
+                    stats[key] = int(match.group(1).replace(",", ""))
+                elif len(match.groups()) == 2:
+                    stats[key] = {
+                        "count": int(match.group(1).replace(",", "")),
+                        "percent": float(match.group(2)),
+                    }
+        return stats
 
     def __run_trim_galore(
         self,
@@ -331,6 +363,18 @@ class JobManager:
                     not in job["current_status"].data.generated_files
                 ):
                     job["current_status"].data.generated_files.append(str(f))
+
+        job["current_status"].data.results["trimming"] = {
+            "trim_galore_stats": {},
+        }
+        for report_file in report_dir.glob("*"):
+            with open(report_file, "r") as f:
+                report_content = f.read()
+
+            stats_json = self.__parse_trimgalore_report(report_content)
+            job["current_status"].data.results["trimming"][
+                "trim_galore_stats"
+            ][str(report_file)] = stats_json
 
         self.__update_status(
             "INFO: Successfully trimmed "
