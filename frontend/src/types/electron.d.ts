@@ -1,4 +1,5 @@
 import { AdvancedParams, FileData, FileDialogResult } from "./index";
+import { AnalysisRecord } from "../utils/analysisHistoryFileUtils";
 
 export interface IElectronAPI {
   getLanguage: () => Promise<string>;
@@ -26,9 +27,21 @@ export interface IElectronFileAPI {
   setAdvancedParams: (advancedParams: AdvancedParams) => Promise<boolean>;
 }
 
+export interface IElectronAnalysisHistoryAPI {
+  getAnalysisHistory: () => Promise<AnalysisRecord[]>;
+  saveAnalysisHistory: (history: AnalysisRecord[]) => Promise<boolean>;
+  addAnalysisRecord: (record: AnalysisRecord) => Promise<boolean>;
+  updateAnalysisStatus: (
+    id: string,
+    status: string,
+    additionalData?: any,
+  ) => Promise<boolean>;
+}
+
 declare global {
   interface Window {
     electronAPI: IElectronAPI;
     electronFile: IElectronFileAPI;
+    electronAnalysisHistory: IElectronAnalysisHistoryAPI;
   }
 }

@@ -17,6 +17,13 @@ import {
 } from "./fileManager";
 import { dialog } from "electron";
 import { getLanguage, setLanguage } from "./languageSettingsManager";
+import {
+  getAnalysisHistory,
+  saveAnalysisHistory,
+  addAnalysisRecord,
+  updateAnalysisStatus,
+  AnalysisRecord,
+} from "../utils/analysisHistoryFileUtils";
 
 const registerFileHandlers = (): void => {
   ipcMain.handle("get-files", () => {
@@ -104,8 +111,36 @@ const registerDialogHandlers = (): void => {
   });
 };
 
+export const registerAnalysisHistoryHandlers = (): void => {
+  ipcMain.handle("get-analysis-history", () => {
+    return getAnalysisHistory();
+  });
+
+  ipcMain.handle(
+    "save-analysis-history",
+    (event, history: AnalysisRecord[]) => {
+      saveAnalysisHistory(history);
+      return true;
+    },
+  );
+
+  ipcMain.handle("add-analysis-record", (event, record: AnalysisRecord) => {
+    addAnalysisRecord(record);
+    return true;
+  });
+
+  ipcMain.handle(
+    "update-analysis-status",
+    (event, id: string, status: string, additionalData?: any) => {
+      updateAnalysisStatus(id, status as any, additionalData);
+      return true;
+    },
+  );
+};
+
 export const registerHandlers = (): void => {
   registerFileHandlers();
   registerSettingsHandlers();
   registerDialogHandlers();
+  registerAnalysisHistoryHandlers();
 };
