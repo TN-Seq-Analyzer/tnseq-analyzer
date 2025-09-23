@@ -11,7 +11,7 @@ class FileType(StrEnum):
 
 class PipelineEntryStage(StrEnum):
     PREPROCESSING = "preprocessing"
-    ALIGNMENT_MAP_REDUCTION = "aligment_map_reduction"
+    ALIGNMENT_MAP_REDUCTION = "alignment_map_reduction"
 
 
 class FileExtensionHandler:
@@ -47,7 +47,9 @@ class FileExtensionHandler:
         extension = ".".join(Path(path).name.split(".")[1:])
         return self.__extension_to_file_type.get(extension)
 
-    def get_pipeline_stage(self, cardinality: dict[FileType, int]) -> PipelineEntryStage | None:
+    def get_pipeline_stage(
+        self, cardinality: dict[FileType, int]
+    ) -> PipelineEntryStage | None:
         cardinality_stage = None
         for vc in self.__valid_cardinalites:
             matches_current_cardinality = True
@@ -67,10 +69,9 @@ class FileExtensionHandler:
 
                 if upper_limit and upper_limit < value:
                     matches_current_cardinality = False
-                    break 
+                    break
 
             if matches_current_cardinality and not valid_cardinality:
                 cardinality_stage = vc["stage"]
 
         return cardinality_stage
-

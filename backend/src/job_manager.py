@@ -123,8 +123,6 @@ class JobManager:
             if fp not in job["current_status"].data.generated_files:
                 job["current_status"].data.generated_files.append(fp)
 
-        job["current_status"].data.results
-
         self.__update_status(
             "INFO: FastQC finished\n"
             f"stdout:\n{res.stdout}\n"
@@ -327,7 +325,7 @@ class JobManager:
 
         if res.returncode != 0:
             self.__update_status(
-                "ERROR: FastQC failed:\n"
+                "ERROR: Trim Galore failed:\n"
                 f"stdout:\n{res.stdout}\n"
                 f"stderr:\n{res.stderr}",
                 job,
@@ -377,7 +375,7 @@ class JobManager:
             ][str(report_file)] = stats_json
 
         self.__update_status(
-            "INFO: Successfully trimmed "
+            "INFO: Trim Galore finished.\nSuccessfully trimmed "
             + " ".join(
                 [
                     Path(read_file).name
