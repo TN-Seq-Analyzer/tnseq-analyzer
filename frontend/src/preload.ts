@@ -25,3 +25,13 @@ contextBridge.exposeInMainWorld("electronFile", {
   setAdvancedParams: (advancedParams: any) =>
     ipcRenderer.invoke("set-advanced-params", advancedParams),
 });
+
+contextBridge.exposeInMainWorld("electronAnalysisHistory", {
+  getAnalysisHistory: () => ipcRenderer.invoke("get-analysis-history"),
+  saveAnalysisHistory: (history: any[]) =>
+    ipcRenderer.invoke("save-analysis-history", history),
+  addAnalysisRecord: (record: any) =>
+    ipcRenderer.invoke("add-analysis-record", record),
+  updateAnalysisStatus: (id: string, status: string, additionalData?: any) =>
+    ipcRenderer.invoke("update-analysis-status", id, status, additionalData),
+});

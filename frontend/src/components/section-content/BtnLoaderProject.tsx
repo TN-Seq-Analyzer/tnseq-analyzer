@@ -4,7 +4,9 @@ import { toast } from "sonner";
 import { Upload } from "lucide-react";
 
 function BtnLoaderProject() {
-  const { t } = useTranslation("translation");
+  const { t } = useTranslation("translation", {
+    keyPrefix: "content.home.modal",
+  });
 
   const handleImport = async () => {
     try {
@@ -13,27 +15,42 @@ function BtnLoaderProject() {
         if (result?.error === "CANCELED") return;
         if (result?.error === "INVALID_JSON") {
           toast.error(
-            t("header.link.importProject.invalid"),
+            t("importProject.invalid", {
+              ns: "translation",
+              keyPrefix: "header.link",
+            }),
           );
           return;
         }
         if (result?.error?.startsWith("MISSING_FIELD_")) {
           toast.error(
-            t("header.link.importProject.invalid"),
+            t("importProject.invalid", {
+              ns: "translation",
+              keyPrefix: "header.link",
+            }),
           );
           return;
         }
         toast.error(
-          t("header.link.importProject.error"),
+          t("importProject.error", {
+            ns: "translation",
+            keyPrefix: "header.link",
+          }),
         );
         return;
       }
       toast.success(
-        t("header.link.importProject.success"),
+        t("importProject.success", {
+          ns: "translation",
+          keyPrefix: "header.link",
+        }),
       );
     } catch (e) {
       toast.error(
-        t("header.link.importProject.error"),
+        t("importProject.error", {
+          ns: "translation",
+          keyPrefix: "header.link",
+        }),
       );
     }
   };
@@ -45,7 +62,7 @@ function BtnLoaderProject() {
       className="text-textPrimary font-inter flex h-[30px] cursor-pointer items-center gap-1 rounded-full bg-[#F2F2F5] px-4 text-[10px] font-bold select-none"
     >
       <Upload size={12} />
-  {t("header.link.importProject.button")}
+      {t("loaderProject")}
     </Button>
   );
 }

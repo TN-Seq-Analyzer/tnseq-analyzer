@@ -1,3 +1,4 @@
+import AnalysisHistoys from "@/pages/AnalysisHistoys";
 import HomeScreen from "@/pages/HomeScreen";
 import InteractiveAnalysisScreen from "@/pages/InteractiveAnalysisScreen";
 import ProcessSampleSCreen from "@/pages/ProcessSampleScreen";
@@ -12,6 +13,7 @@ export default function RouterLayout() {
         path="/interactiveAnalysis"
         element={<InteractiveAnalysisScreen />}
       />
+      <Route path="/analysisHistory" element={<AnalysisHistoys />} />
     </Routes>
   );
 }
