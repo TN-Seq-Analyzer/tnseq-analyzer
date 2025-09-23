@@ -1,5 +1,5 @@
 from enum import StrEnum
-from queue import Queue
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -20,6 +20,7 @@ class TrimmerType(StrEnum):
 class TrimmingOptionsModel(BaseModel):
     trimmer: TrimmerType
     params: list[str] = []
+    adapter: str
 
 
 class QualityControlOptionsModel(BaseModel):
@@ -35,8 +36,9 @@ class AlignerOptionsModel(BaseModel):
 
 
 class AlignmentOptionsModel(BaseModel):
-    build: AlignmentBuildOptionsModel
-    aligner: AlignerOptionsModel
+    build: AlignmentBuildOptionsModel | None = None
+    aligner: AlignerOptionsModel | None = None
+    index_prefix: str
 
 
 class JobOptionsModel(BaseModel):
@@ -51,13 +53,14 @@ class JobRequestModel(BaseModel):
     options: JobOptionsModel | None = None
 
 
+class JobStatusDataModel(BaseModel):
+    step: JobStep = JobStep.INITIAL_QUALITY_CONTROL
+    logs: list[str] = []
+    generated_files: list[str] = []
+    results: dict[str, Any] = {}
+    progress: float = 0
+
+
 class JobStatusModel(BaseModel):
-    step: JobStep
-    logs: list[str]
-    generated_files: list[str]
-
-
-class JobEntity(BaseModel):
-    current_status: JobStatusModel
-    status_queue: Queue
-
+    success: bool
+    data: JobStatusDataModel

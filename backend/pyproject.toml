@@ -59,7 +59,7 @@ exclude = [
     "site-packages",
     "venv",
 ]
-include = ["tests"]
+include = ["tests", "src", "."]
 
 line-length = 79
 indent-width = 4
