@@ -20,7 +20,7 @@ class TrimmerType(StrEnum):
 class TrimmingOptionsModel(BaseModel):
     trimmer: TrimmerType
     params: list[str] = []
-    adapter: str
+    adapter: str | None = None
 
 
 class QualityControlOptionsModel(BaseModel):

@@ -11,7 +11,7 @@ from starlette.websockets import WebSocketDisconnect
 
 from file_extension_handler import FileExtensionHandler, PipelineEntryStage
 from job_manager import JobManager
-from schemas import JobRequestModel
+from schemas import JobRequestModel, JobStatusModel
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -95,7 +95,7 @@ def job_router(
                     },
                 }
             )
-        status_queue = cast(queue.Queue, status_queue)
+        status_queue = cast(queue.Queue[JobStatusModel], status_queue)
         try:
             while True:
                 try:
@@ -103,6 +103,10 @@ def job_router(
                     await websocket.send_json(status.model_dump())
                     status_queue.task_done()
                     if not status.success:
+                        await websocket.close()
+                        await job_manager.delete(job_id)
+                        break
+                    if status.data.progress == 1:
                         await websocket.close()
                         await job_manager.delete(job_id)
                         break
