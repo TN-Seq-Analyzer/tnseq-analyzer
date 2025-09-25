@@ -72,3 +72,29 @@ export function summarizeEntries(entries: PipelineLogEntry[]) {
     success: last?.success,
   };
 }
+
+export function isSuccessLine(text?: string) {
+  if (!text) return false;
+  return /(finished|success|successfully|completed)/i.test(text);
+}
+
+export function getSuccessSummary(entries: PipelineLogEntry[]): string {
+  const infoSuccess = entries.find(
+    (e) => e.level === "INFO" && isSuccessLine(e.text),
+  );
+  if (infoSuccess?.text) return infoSuccess.text;
+
+  const anySuccess = entries.find((e) => isSuccessLine(e.text));
+  if (anySuccess?.text) return anySuccess.text;
+
+  for (let i = entries.length - 1; i >= 0; i--) {
+    if (entries[i].level === "INFO" && entries[i].text) {
+      return entries[i].text;
+    }
+  }
+
+  const firstNonEmpty = entries.find((e) => (e.text || "").trim().length > 0);
+  if (firstNonEmpty?.text) return firstNonEmpty.text;
+
+  return "Step completed";
+}
