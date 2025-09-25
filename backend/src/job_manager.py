@@ -1,8 +1,8 @@
+import asyncio
 import logging
 import os
 import re
 import shutil
-import subprocess
 from copy import deepcopy
 from pathlib import Path
 from queue import Queue
@@ -64,7 +64,49 @@ class JobManager:
         job["status_queue"].put(deepcopy(job["current_status"]))
         log_function(log_message)
 
-    def __run_fastqc(
+    async def __run_cmd(
+        self, cmd: list[str], job: JobEntity
+    ) -> tuple[int | None, str, str]:
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+
+        lines = {
+            "stdout": [],
+            "stderr": [],
+        }
+
+        async def read_stream(stream: asyncio.StreamReader, label):
+            while True:
+                line = await stream.readline()
+                if not line:
+                    break
+                line = line.decode().rstrip()
+                self.__update_status(
+                    f"{label}: {line}",
+                    job,
+                    logger.info,
+                )
+                lines[label].append(line)
+
+        await asyncio.gather(
+            *[
+                read_stream(args[0], args[1])
+                for args in [(proc.stdout, "stdout"), (proc.stderr, "stderr")]
+                if args[0]
+            ]
+        )
+
+        await proc.wait()
+        return (
+            proc.returncode,
+            "\n".join(lines["stdout"]),
+            "\n".join(lines["stderr"]),
+        )
+
+    async def __run_fastqc(
         self,
         file_paths: list[str],
         output_dir: str,
@@ -105,13 +147,12 @@ class JobManager:
             job,
             logger.info,
         )
-        res = subprocess.run(cmd, capture_output=True, text=True)
 
-        if res.returncode != 0:
+        returncode, _, _ = await self.__run_cmd(cmd, job)
+
+        if returncode != 0:
             self.__update_status(
-                "ERROR: FastQC failed: "
-                f"stdout:\n{res.stdout}\n"
-                f"stderr:\n{res.stderr}",
+                "ERROR: FastQC failed",
                 job,
                 logger.error,
                 False,
@@ -124,9 +165,7 @@ class JobManager:
                 job["current_status"].data.generated_files.append(fp)
 
         self.__update_status(
-            "INFO: FastQC finished\n"
-            f"stdout:\n{res.stdout}\n"
-            f"stderr:\n{res.stderr}",
+            "INFO: FastQC finished",
             job,
             logger.info,
             progress=progress,
@@ -170,7 +209,7 @@ class JobManager:
 
         return stats
 
-    def __run_cutadapt(
+    async def __run_cutadapt(
         self,
         file_type_to_paths: dict[FileType, list[str]],
         output_dir: str,
@@ -230,26 +269,22 @@ class JobManager:
                 cmd.extend(options.params)
             trimmed_files.append(str(trimmed_read_file))
 
-            res = subprocess.run(cmd, capture_output=True, text=True)
-            if res.returncode != 0:
+            returncode, stdout, _ = await self.__run_cmd(cmd, job)
+            if returncode != 0:
                 self.__update_status(
-                    "ERROR: Cutadapt failed:\n"
-                    f"stdout:\n{res.stdout}\n"
-                    f"stderr:\n{res.stderr}",
+                    "ERROR: Cutadapt failed",
                     job,
                     logger.error,
                     False,
                 )
                 return
 
-            cutadapt_stats = self.__parse_cutadapt_log(res.stdout)
+            cutadapt_stats = self.__parse_cutadapt_log(stdout)
             job["current_status"].data.results["trimming"]["cutadapt_stats"][
                 read_file
             ] = cutadapt_stats
             self.__update_status(
-                f"INFO: Successfully trimmed {read_file_name}\n"
-                f"stdout:\n{res.stdout}\n"
-                f"stderr:\n{res.stderr}",
+                f"INFO: Successfully trimmed {read_file_name}",
                 job,
                 logger.info,
             )
@@ -258,6 +293,7 @@ class JobManager:
             "INFO: Cutadapt finished",
             job,
             logger.info,
+            progress=progress,
         )
 
     def __parse_trimgalore_report(self, report: str) -> dict:
@@ -282,7 +318,7 @@ class JobManager:
                     }
         return stats
 
-    def __run_trim_galore(
+    async def __run_trim_galore(
         self,
         file_type_to_paths: dict[FileType, list[str]],
         output_dir: str,
@@ -294,9 +330,17 @@ class JobManager:
         read_files = file_type_to_paths[FileType.READ]
 
         self.__update_status(
+            "INFO: Starting reads trimming",
+            job,
+            logger.info,
+            step=JobStep.TRIMMING,
+        )
+
+        self.__update_status(
             "INFO: Trimming with trim_galore",
             job,
             logger.info,
+            step=JobStep.TRIMMING,
         )
 
         self.__update_status(
@@ -321,13 +365,12 @@ class JobManager:
 
         if options:
             cmd.extend(options.params)
-        res = subprocess.run(cmd, capture_output=True, text=True)
 
-        if res.returncode != 0:
+        returncode, _, _ = await self.__run_cmd(cmd, job)
+
+        if returncode != 0:
             self.__update_status(
-                "ERROR: Trim Galore failed:\n"
-                f"stdout:\n{res.stdout}\n"
-                f"stderr:\n{res.stderr}",
+                "ERROR: Trim Galore failed",
                 job,
                 logger.error,
                 False,
@@ -375,21 +418,19 @@ class JobManager:
             ][str(report_file)] = stats_json
 
         self.__update_status(
-            "INFO: Trim Galore finished.\nSuccessfully trimmed "
-            + " ".join(
+            "INFO: Trim Galore finished. Successfully trimmed\n"
+            + "\n".join(
                 [
                     Path(read_file).name
                     for read_file in file_type_to_paths[FileType.READ]
                 ]
-            )
-            + "\n"
-            + f"stdout:\n{res.stdout}\nstderr:\n{res.stderr}",
+            ),
             job,
             logger.info,
             progress=progress,
         )
 
-    def __run_bowtie2_build(
+    async def __run_bowtie2_build(
         self,
         file_type_to_paths: dict[FileType, list[str]],
         output_dir: str,
@@ -420,15 +461,11 @@ class JobManager:
         if options.build:
             bowtie2_build_command.extend(options.build.params)
 
-        res = subprocess.run(
-            bowtie2_build_command, capture_output=True, text=True
-        )
+        returncode, _, _ = await self.__run_cmd(bowtie2_build_command, job)
 
-        if res.returncode != 0:
+        if returncode != 0:
             self.__update_status(
-                "ERROR: bowtie2-build failed:\n"
-                f"stdout:\n{res.stdout}\n"
-                f"stderr:\n{res.stderr}",
+                "ERROR: bowtie2-build failed",
                 job,
                 logger.error,
                 False,
@@ -441,15 +478,13 @@ class JobManager:
                 job["current_status"].data.generated_files.append(fp)
 
         self.__update_status(
-            "INFO: bowtie2-build finished\n"
-            f"stdout:\n{res.stdout}\n"
-            f"stderr:\n{res.stderr}",
+            "INFO: bowtie2-build finished",
             job,
             logger.info,
             progress=progress,
         )
 
-    def __run_bowtie2(
+    async def __run_bowtie2(
         self,
         file_type_to_paths: dict[FileType, list[str]],
         output_dir: str,
@@ -480,12 +515,10 @@ class JobManager:
         if options.aligner:
             bowtie2_command.extend(options.aligner.params)
 
-        res = subprocess.run(bowtie2_command, capture_output=True, text=True)
-        if res.returncode != 0:
+        returncode, _, _ = await self.__run_cmd(bowtie2_command, job)
+        if returncode != 0:
             self.__update_status(
-                "ERROR: bowtie2 failed\n"
-                f"stdout:\n{res.stdout}\n"
-                f"stderr:\n{res.stderr}",
+                "ERROR: bowtie2 failed",
                 job,
                 logger.error,
                 False,
@@ -497,9 +530,7 @@ class JobManager:
                 job["current_status"].data.generated_files.append(str(f))
 
         self.__update_status(
-            "INFO: bowtie2 finished\n"
-            f"stdout:\n{res.stdout}\n"
-            f"stderr:\n{res.stderr}",
+            "INFO: bowtie2 finished",
             job,
             logger.info,
             progress=progress,
@@ -515,7 +546,7 @@ class JobManager:
         options: JobOptionsModel | None = None,
     ):
         job = self.__jobs[job_id]
-        self.__run_fastqc(
+        await self.__run_fastqc(
             file_type_to_paths[FileType.READ],
             output_dir,
             "initial",
@@ -536,7 +567,7 @@ class JobManager:
         trimming_options = options.trimming
 
         if trimming_options.trimmer == TrimmerType.CUTADAPT:
-            self.__run_cutadapt(
+            await self.__run_cutadapt(
                 file_type_to_paths,
                 output_dir,
                 job,
@@ -547,7 +578,7 @@ class JobManager:
             trimmed_files = [
                 str(f) for f in trimmed_reads_dir.iterdir() if f.is_file()
             ]
-            self.__run_fastqc(
+            await self.__run_fastqc(
                 trimmed_files,
                 output_dir,
                 "final",
@@ -556,7 +587,7 @@ class JobManager:
             )
 
         elif trimming_options.trimmer == TrimmerType.TRIM_GALORE:
-            self.__run_trim_galore(
+            await self.__run_trim_galore(
                 file_type_to_paths,
                 output_dir,
                 job,
@@ -580,7 +611,7 @@ class JobManager:
             )
             return
 
-        self.__run_bowtie2_build(
+        await self.__run_bowtie2_build(
             file_type_to_paths,
             output_dir,
             job,
@@ -588,7 +619,7 @@ class JobManager:
             progress=0.8,
         )
 
-        self.__run_bowtie2(
+        await self.__run_bowtie2(
             file_type_to_paths,
             output_dir,
             job,
