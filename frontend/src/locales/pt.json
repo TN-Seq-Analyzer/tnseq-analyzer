@@ -21,7 +21,8 @@
     "title": {
       "home": "Bem-vindo ao TNSeq Analyzer",
       "processSample": "Processar Amostra",
-      "advancedParameters": "Parâmetros Avançados"
+      "advancedParameters": "Parâmetros Avançados",
+      "pipelineLog": "Log do Pipeline"
     },
     "description": {
       "home": "Esta ferramenta foi desenvolvida para facilitar a análise de dados de Tn-Seq em bactérias. Carregue seus arquivos de sequenciamento, configure os parâmetros de análise e descubra genes essenciais e redes de interação molecular com poucos cliques.",
@@ -99,7 +100,9 @@
       },
       "validation": {
         "noFastq": "Por favor, selecione um arquivo FASTQ",
-        "noTranspSeq": "Por favor, forneça a sequência do transposon"
+        "noTranspSeq": "Por favor, forneça a sequência do transposon",
+        "noFasta": "Por favor, selecione um arquivo FASTA",
+        "noDirectory": "Por favor, selecione um diretório de saída"
       },
       "errors": {
         "analysisFailed": "Erro na análise: {{message}}"

@@ -1,92 +1,63 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import React, { useEffect, useRef } from "react";
+import { useAnalysisContext } from "@/context/AnalysisContext";
+import Title from "@/components/Title";
 
 const LogsPipeline: React.FC = () => {
-  const [logs, setLogs] = useState<string[]>([
-    "2025-09-08 13:00:59.249 - INFO - Log do pipeline pronto para receber mensagens.",
-    "2025-09-08 13:00:59.249 - INFO - Log do pipeline pronto para receber mensagens.",
-    "2025-09-08 13:00:59.249 - INFO - Log do pipeline pronto para receber mensagens.",
-    "2025-09-08 13:00:59.249 - INFO - Log do pipeline pronto para receber mensagens.",
-    "2025-09-08 13:00:59.249 - INFO - Log do pipeline pronto para receber mensagens.",
-    "2025-09-08 13:00:59.249 - INFO - Log do pipeline pronto para receber mensagens.",
-    "2025-09-08 13:00:59.249 - INFO - Log do pipeline pronto para receber mensagens.",
-  ]);
-  const webSocketRef = useRef<WebSocket | null>(null);
+  const { pipelineLogs } = useAnalysisContext();
   const logsContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const connectWebSocket = () => {
-      try {
-        const ws = new WebSocket("ws://localhost:8000/api/logs/pipeline");
-
-        ws.onopen = () => {
-          console.log("Conectado ao WebSocket de logs");
-        };
-
-        ws.onmessage = (event) => {
-          setLogs((prevLogs) => [...prevLogs, event.data]);
-        };
-
-        ws.onclose = () => {
-          console.log("Desconectado do WebSocket de logs");
-
-          setTimeout(() => {
-            connectWebSocket();
-          }, 3000);
-        };
-
-        webSocketRef.current = ws;
-      } catch (error) {
-        console.error("Erro ao conectar WebSocket:", error);
-
-        setTimeout(() => {
-          connectWebSocket();
-        }, 5000);
-      }
-    };
-
-    connectWebSocket();
-
-    return () => {
-      if (webSocketRef.current) {
-        webSocketRef.current.close();
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (logsContainerRef.current) {
       logsContainerRef.current.scrollTop =
         logsContainerRef.current.scrollHeight;
     }
-  }, [logs]);
-
+  }, [pipelineLogs]);
   return (
-    <Box p={3}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Logs do Pipeline
-      </Typography>
-      <Box
-        ref={logsContainerRef}
-        sx={{
-          height: "calc(100vh - 150px)",
-          overflow: "auto",
-          border: "1px solid #e0e0e0",
-          borderRadius: 1,
-          p: 2,
-          fontFamily: "monospace",
-          fontSize: "0.875rem",
-          whiteSpace: "pre-wrap",
-          backgroundColor: "#fff",
-        }}
-      >
-        {logs.map((log, index) => (
-          <Box key={index} sx={{ mb: 0.5 }}>
-            {log}
-          </Box>
-        ))}
-      </Box>
-    </Box>
+    <main className="flex flex-1 overflow-hidden bg-[var(--bg-main)] px-8 py-8 select-none">
+      <div className="w-full">
+        <Title titleValue="pipelineLog" />
+
+        <div
+          ref={logsContainerRef}
+          className="mt-5 h-[calc(100vh-150px)] overflow-auto rounded border border-gray-200 bg-white p-3 font-mono text-sm whitespace-pre-wrap"
+        >
+          {pipelineLogs.map((log, index) => {
+            const colorClass =
+              log.level === "ERROR"
+                ? "text-red-600"
+                : log.level === "WARN"
+                  ? "text-amber-600"
+                  : log.level === "STDERR"
+                    ? "text-purple-700"
+                    : "text-green-700";
+            const value = Math.max(
+              0,
+              Math.min(100, Math.floor(((log.progress ?? 0) as number) * 100)),
+            );
+            return (
+              <div key={index} className="mb-2">
+                <span className="text-gray-500">
+                  {new Date(log.timestamp).toLocaleTimeString()} -
+                </span>{" "}
+                <span className="font-semibold">{log.step}</span>{" "}
+                <span className={`font-semibold ${colorClass}`}>
+                  [{log.level}]
+                </span>{" "}
+                <span>{log.text}</span>
+                {/* {typeof log.progress === "number" && (
+                  <div className="mt-1 h-2 w-full rounded bg-gray-200">
+                    <div
+                      className="h-2 rounded bg-blue-500 transition-all"
+                      style={{ width: `${value}%` }}
+                    />
+                  </div>
+                )} */}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </main>
   );
 };
 
