@@ -3,7 +3,11 @@ import type { FileData } from "@/types/index";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { parseWsChunkToEntries } from "@/utils/pipelineLogFormatter";
+import {
+  parseWsChunkToEntries,
+  getSuccessSummary,
+  isSuccessLine,
+} from "@/utils/pipelineLogFormatter";
 import { useAnalysisContext } from "@/context/AnalysisContext";
 
 export function useAnalysis() {
@@ -77,7 +81,38 @@ export function useAnalysis() {
         },
         (msg: string) => {
           const entries = parseWsChunkToEntries(msg);
-          appendPipelineLogs(entries);
+
+          // Se o chunk sinaliza sucesso da etapa, gerar uma entrada compacta por etapa
+          const successLines = entries.filter((e) => isSuccessLine(e.text));
+          if (successLines.length > 0) {
+            appendPipelineLogs(successLines);
+          } else {
+            const successByStep = new Map<string, typeof entries>();
+            for (const e of entries) {
+              if (e.success) {
+                if (!successByStep.has(e.step)) successByStep.set(e.step, []);
+                successByStep.get(e.step)!.push(e);
+              }
+            }
+            if (successByStep.size > 0) {
+              const compactEntries = Array.from(successByStep.entries()).map(
+                ([step, list]) => {
+                  const summary = getSuccessSummary(list);
+                  const base = list[list.length - 1];
+                  return {
+                    timestamp: base.timestamp,
+                    step,
+                    level: "INFO" as const,
+                    text: summary,
+                    progress: base.progress,
+                    success: true,
+                  };
+                },
+              );
+              appendPipelineLogs(compactEntries);
+            }
+          }
+
           const lastWithProgress = entries.find(
             (e) => typeof e.progress === "number",
           );
