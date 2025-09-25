@@ -21,7 +21,8 @@
     "title": {
       "home": "Bem-vindo ao TNSeq Analyzer",
       "processSample": "Processar Amostra",
-      "advancedParameters": "Parâmetros Avançados"
+      "advancedParameters": "Parâmetros Avançados",
+      "pipelineLog": "Log do Pipeline"
     },
     "description": {
       "home": "Esta ferramenta foi desenvolvida para facilitar a análise de dados de Tn-Seq em bactérias. Carregue seus arquivos de sequenciamento, configure os parâmetros de análise e descubra genes essenciais e redes de interação molecular com poucos cliques.",
@@ -99,7 +100,9 @@
       },
       "validation": {
         "noFastq": "Por favor, selecione um arquivo FASTQ",
-        "noTranspSeq": "Por favor, forneça a sequência do transposon"
+        "noTranspSeq": "Por favor, forneça a sequência do transposon",
+        "noFasta": "Por favor, selecione um arquivo FASTA",
+        "noDirectory": "Por favor, selecione um diretório de saída"
       },
       "errors": {
         "analysisFailed": "Erro na análise: {{message}}"
@@ -108,6 +111,52 @@
     "interactiveAnalysis": {
       "resultTitle": "Resultado (JSON cru)",
       "noResult": "Nenhum resultado ainda."
+    },
+    "analysisHistory": {
+      "title": "Histórico de Análises",
+      "description": "Aqui você pode acessar todas as análises processadas e verificar resultados e detalhes de cada análise.",
+      "loading": "Carregando histórico de análises...",
+      "search": {
+        "placeholder": "Pesquise pelo nome do projeto ou data"
+      },
+      "table": {
+        "date": "Data",
+        "projectName": "Nome do projeto",
+        "status": "Status",
+        "actions": "Ações"
+      },
+      "noResults": "Nenhum resultado encontrado.",
+      "actions": {
+        "viewResults": "Ver resultados",
+        "viewDetails": "Ver detalhes"
+      },
+      "status": {
+        "completed": "Completo",
+        "error": "Erro",
+        "canceled": "Cancelado",
+        "unknown": "Desconhecido"
+      },
+      "modal": {
+        "details": {
+          "title": "Detalhes da Análise",
+          "projectName": "Nome do projeto",
+          "date": "Data",
+          "status": "Status",
+          "errorDetails": "Detalhes do erro",
+          "close": "Fechar"
+        },
+        "results": {
+          "title": "Resultados da Análise",
+          "projectName": "Nome do projeto",
+          "date": "Data",
+          "resultsPath": "Caminho dos resultados",
+          "summary": "Resumo dos resultados",
+          "noSummary": "Nenhum resumo disponível",
+          "close": "Fechar",
+          "openResults": "Abrir pasta de resultados",
+          "results": "Resultados"
+        }
+      }
     }
   },
   "language": {
