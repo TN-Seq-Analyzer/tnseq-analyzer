@@ -60,19 +60,20 @@ function AnalysisHistory() {
     loadAnalysisHistory();
   }, []);
 
-  //   const saveAnalysisRecord = async (record: AnalysisRecord) => {
-  //     try {
-  //       const newHistory = [...analysisHistory, record];
-  //       setAnalysisHistory(newHistory);
-  //       await window.electronAnalysisHistory.saveAnalysisHistory(newHistory);
-  //     } catch (error) {
-  //       console.error("Erro ao salvar registro de análise:", error);
-  //     }
-  //   };
+  // const saveAnalysisRecord = async (record: AnalysisRecord) => {
+  //   try {
+  //     const newHistory = [...analysisHistory, record];
+  //     setAnalysisHistory(newHistory);
+  //     await window.electronAnalysisHistory.saveAnalysisHistory(newHistory);
+  //   } catch (error) {
+  //     console.error("Erro ao salvar registro de análise:", error);
+  //   }
+  // };
 
   const filteredHistory = analysisHistory.filter(
     (record) =>
-      record.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (record.projectName &&
+        record.projectName.toLowerCase().includes(searchTerm.toLowerCase())) ||
       record.date.includes(searchTerm),
   );
 
