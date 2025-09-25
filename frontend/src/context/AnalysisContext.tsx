@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
+import type { FileData } from "@/types";
 
 type AnalysisResult = any;
 
@@ -27,19 +34,70 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [pipelineLogs, setPipelineLogs] = useState<PipelineLogEntry[]>([]);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const files: FileData | undefined =
+          await window.electronFile?.getFiles?.();
+        if (files) {
+          setResults(files.analysisResult ?? null);
+          setPipelineLogs(
+            Array.isArray(files.pipelineLogs) ? files.pipelineLogs : [],
+          );
+        }
+      } catch (e) {
+        console.error(
+          "Falha ao carregar estado persistido do processamento:",
+          e,
+        );
+      }
+    })();
+  }, []);
+
   const appendPipelineLogs = (
     entries: PipelineLogEntry[] | PipelineLogEntry,
   ) => {
-    setPipelineLogs((prev) => prev.concat(entries as any));
+    setPipelineLogs((prev) => {
+      const next = prev.concat(entries as any);
+      try {
+        window.electronFile?.getFiles?.().then((files) => {
+          if (files) {
+            const updated: FileData = { ...files, pipelineLogs: next };
+            window.electronFile?.setFiles?.(updated);
+          }
+        });
+      } catch {}
+      return next;
+    });
   };
 
-  const clearPipelineLogs = () => setPipelineLogs([]);
+  const clearPipelineLogs = () => {
+    setPipelineLogs([]);
+    try {
+      window.electronFile?.getFiles?.().then((files) => {
+        if (files) {
+          const updated: FileData = { ...files, pipelineLogs: [] };
+          window.electronFile?.setFiles?.(updated);
+        }
+      });
+    } catch {}
+  };
 
   return (
     <AnalysisContext.Provider
       value={{
         results,
-        setResults,
+        setResults: (r: AnalysisResult | null) => {
+          setResults(r);
+          try {
+            window.electronFile?.getFiles?.().then((files) => {
+              if (files) {
+                const updated: FileData = { ...files, analysisResult: r };
+                window.electronFile?.setFiles?.(updated);
+              }
+            });
+          } catch {}
+        },
         pipelineLogs,
         appendPipelineLogs,
         clearPipelineLogs,

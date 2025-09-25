@@ -25,6 +25,9 @@ const getDefaultFileData = (): FileData => ({
     minConfidenceThreshold: 0,
     maxNonEssentialGenes: 0,
   },
+  pipelineLogs: [],
+  analysisResult: null,
+  lastProgress: 0,
 });
 
 const getDefaultAdvancedParams = (): AdvancedParams => ({
@@ -161,6 +164,10 @@ export const importProjectFromPath = (sourcePath: string): ImportResult => {
           json.advancedParams?.minConfidenceThreshold ?? 0,
         maxNonEssentialGenes: json.advancedParams?.maxNonEssentialGenes ?? 0,
       },
+      pipelineLogs: Array.isArray(json.pipelineLogs) ? json.pipelineLogs : [],
+      analysisResult: json.analysisResult ?? null,
+      lastProgress:
+        typeof json.lastProgress === "number" ? json.lastProgress : 0,
     };
 
     saveFiles(merged);
