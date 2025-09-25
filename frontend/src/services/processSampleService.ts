@@ -115,12 +115,24 @@ export async function startJobAndStream(
   files: FileData,
   options?: Partial<JobOptions>,
   onMessage?: (msg: string) => void,
+  signal?: AbortSignal,
 ): Promise<JobStreamResult> {
   const { job_id } = await createJob(files, options);
 
   return new Promise<JobStreamResult>((resolve, reject) => {
     const ws = new WebSocket(`${WS_BASE_URL}/jobs/${job_id}`);
     const messages: string[] = [];
+    let settled = false;
+    const safeResolve = (v: JobStreamResult) => {
+      if (settled) return;
+      settled = true;
+      resolve(v);
+    };
+    const safeReject = (e: any) => {
+      if (settled) return;
+      settled = true;
+      reject(e);
+    };
 
     ws.onopen = () => {
       console.log(`[WS] Conexão aberta para job ${job_id}`);
@@ -143,12 +155,32 @@ export async function startJobAndStream(
 
     ws.onerror = (err) => {
       console.error(`[WS] Erro no job ${job_id}:`, err);
-      reject(new Error("Erro na conexão WebSocket"));
+      safeReject(new Error("Erro na conexão WebSocket"));
     };
 
     ws.onclose = () => {
       console.log(`[WS] Conexão encerrada para job ${job_id}`);
-      resolve({ jobId: job_id, messages });
+      safeResolve({ jobId: job_id, messages });
     };
+
+    if (signal) {
+      const onAbort = () => {
+        console.warn(
+          `[WS] Cancelando job ${job_id} por solicitação do usuário`,
+        );
+        try {
+          ws.onopen = null as any;
+          ws.onmessage = null as any;
+          ws.onerror = null as any;
+          ws.close(1000, "Cancelled by user");
+        } catch {}
+        safeReject(new Error("ABORTED"));
+      };
+      if (signal.aborted) {
+        onAbort();
+      } else {
+        signal.addEventListener("abort", onAbort, { once: true });
+      }
+    }
   });
 }

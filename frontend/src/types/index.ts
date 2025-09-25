@@ -13,6 +13,9 @@ export interface FileData {
   transpFile: string;
   idFile: string;
   advancedParams: AdvancedParams;
+  pipelineLogs?: PipelineLogEntry[];
+  analysisResult?: any;
+  lastProgress?: number;
 }
 
 export interface AdvancedParams {
@@ -33,3 +36,12 @@ export interface FileDialogResult {
   filePath: string;
   fileContent?: string;
 }
+
+export type PipelineLogEntry = {
+  timestamp: string;
+  step: string;
+  level: "INFO" | "ERROR" | "WARN" | "STDERR";
+  text: string;
+  progress?: number;
+  success?: boolean;
+};
