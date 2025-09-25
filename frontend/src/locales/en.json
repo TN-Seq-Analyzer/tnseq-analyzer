@@ -108,6 +108,52 @@
     "interactiveAnalysis": {
       "resultTitle": "Result (raw JSON)",
       "noResult": "No result yet."
+    },
+    "analysisHistory": {
+      "title": "Analysis History",
+      "description": "Here you can access all processed analyses and view results and details for each analysis.",
+      "loading": "Loading analysis history...",
+      "search": {
+        "placeholder": "Search by project name or date"
+      },
+      "table": {
+        "date": "Date",
+        "projectName": "Project name",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "noResults": "No results found.",
+      "actions": {
+        "viewResults": "View results",
+        "viewDetails": "View details"
+      },
+      "status": {
+        "completed": "Completed",
+        "error": "Error",
+        "canceled": "Canceled",
+        "unknown": "Unknown"
+      },
+      "modal": {
+        "details": {
+          "title": "Analysis Details",
+          "projectName": "Project name",
+          "date": "Date",
+          "status": "Status",
+          "errorDetails": "Error details",
+          "close": "Close"
+        },
+        "results": {
+          "title": "Analysis Results",
+          "projectName": "Project name",
+          "date": "Date",
+          "resultsPath": "Results path",
+          "summary": "Results summary",
+          "noSummary": "No summary available",
+          "close": "Close",
+          "openResults": "Open results folder",
+          "results": "Results"
+        }
+      }
     }
   },
   "language": {
