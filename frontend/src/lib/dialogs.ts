@@ -10,13 +10,13 @@ export async function openDialog(
 
   switch (type) {
     case "fastq":
-      filters = [{ name: "Fastq", extensions: ["fastq", "fastq.gz"] }];
+      filters = [{ name: "Fastq", extensions: ["fastq", "fastq.gz", "fq"] }];
       break;
     case "gff":
       filters = [{ name: "Gff", extensions: ["gff", "gff3"] }];
       break;
     case "fasta":
-      filters = [{ name: "Fasta", extensions: ["fasta"] }];
+      filters = [{ name: "Fasta", extensions: ["fasta", "fa"] }];
       readContent = false;
       break;
     case "directory":

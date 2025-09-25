@@ -1,8 +1,14 @@
+export interface FileDataFileField {
+  name: string | null;
+  content: string | null;
+  path?: string | null;
+}
+
 export interface FileData {
   projectName: string;
-  fastq: { name: string | null; content: string | null };
-  fasta: { name: string | null; content: string | null };
-  gff: { name: string | null; content: string | null };
+  fastq: FileDataFileField;
+  fasta: FileDataFileField;
+  gff: FileDataFileField;
   directory: { directory: string | null };
   transpFile: string;
   idFile: string;
