@@ -4,9 +4,9 @@ import { FileData } from "../types/index";
 export function useFileHandler() {
   const [files, setFiles] = useState<FileData>({
     projectName: "",
-  fastq: { name: null, content: null, path: null },
-  fasta: { name: null, content: null, path: null },
-  gff: { name: null, content: null, path: null },
+    fastq: { name: null, content: null },
+    fasta: { name: null, content: null },
+    gff: { name: null, content: null },
     directory: { directory: null },
     transpFile: "",
     idFile: "",
@@ -69,7 +69,11 @@ export function useFileHandler() {
       setFiles((prev) => {
         const updated = {
           ...prev,
-          [field]: { name: fileName, content: fileContent ?? null, path: filePath },
+          [field]: {
+            name: fileName,
+            content: fileContent ?? null,
+            path: filePath,
+          },
         };
         persistFiles(updated);
         return updated;
