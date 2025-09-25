@@ -1,15 +1,20 @@
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 function SearchBar({
   setSearchTerm,
 }: {
   setSearchTerm: (term: string) => void;
 }) {
+  const { t } = useTranslation("translation", {
+    keyPrefix: "content.analysisHistory",
+  });
+
   return (
     <div className="mb-5 w-full">
       <Input
-        placeholder="Pesquise pelo nome do projeto ou data"
+        placeholder={t("search.placeholder")}
         prefix={<SearchOutlined />}
         onChange={(e) => {
           (setSearchTerm(e.target.value), console.log(e.target.value));

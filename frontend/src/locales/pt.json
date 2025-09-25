@@ -108,6 +108,52 @@
     "interactiveAnalysis": {
       "resultTitle": "Resultado (JSON cru)",
       "noResult": "Nenhum resultado ainda."
+    },
+    "analysisHistory": {
+      "title": "Histórico de Análises",
+      "description": "Aqui você pode acessar todas as análises processadas e verificar resultados e detalhes de cada análise.",
+      "loading": "Carregando histórico de análises...",
+      "search": {
+        "placeholder": "Pesquise pelo nome do projeto ou data"
+      },
+      "table": {
+        "date": "Data",
+        "projectName": "Nome do projeto",
+        "status": "Status",
+        "actions": "Ações"
+      },
+      "noResults": "Nenhum resultado encontrado.",
+      "actions": {
+        "viewResults": "Ver resultados",
+        "viewDetails": "Ver detalhes"
+      },
+      "status": {
+        "completed": "Completo",
+        "error": "Erro",
+        "canceled": "Cancelado",
+        "unknown": "Desconhecido"
+      },
+      "modal": {
+        "details": {
+          "title": "Detalhes da Análise",
+          "projectName": "Nome do projeto",
+          "date": "Data",
+          "status": "Status",
+          "errorDetails": "Detalhes do erro",
+          "close": "Fechar"
+        },
+        "results": {
+          "title": "Resultados da Análise",
+          "projectName": "Nome do projeto",
+          "date": "Data",
+          "resultsPath": "Caminho dos resultados",
+          "summary": "Resumo dos resultados",
+          "noSummary": "Nenhum resumo disponível",
+          "close": "Fechar",
+          "openResults": "Abrir pasta de resultados",
+          "results": "Resultados"
+        }
+      }
     }
   },
   "language": {

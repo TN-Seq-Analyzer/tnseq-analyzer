@@ -6,8 +6,13 @@ import { formatDate } from "@/utils/formatDate";
 import ModalShowDetails from "@/components/analysis-historys/ModalShowDetails";
 import ModalShowResults from "@/components/analysis-historys/ModalShowResults";
 import SearchBar from "@/components/analysis-historys/SearchBar";
+import { useTranslation } from "react-i18next";
 
 function AnalysisHistory() {
+  const { t } = useTranslation("translation", {
+    keyPrefix: "content.analysisHistory",
+  });
+
   const [analysisHistory, setAnalysisHistory] = useState<AnalysisRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
@@ -22,6 +27,15 @@ function AnalysisHistory() {
     Cancelado: "text-yellow-500",
     default: "text-gray-700",
   };
+
+  const statusKeyMap: Record<string, string> = {
+    Completo: "completed",
+    Erro: "error",
+    Cancelado: "canceled",
+  };
+
+  const displayStatus = (status: string) =>
+    t(`status.${statusKeyMap[status] || "unknown"}`);
 
   const classesStyleTable =
     "font-inter border-b-2 border-gray-200 bg-[#667582] px-4 py-3 text-left text-xs font-semibold text-white";
@@ -75,9 +89,7 @@ function AnalysisHistory() {
   if (loading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <p className="font-inter text-xs">
-          Carregando histórico de análises...
-        </p>
+        <p className="font-inter text-xs">{t("loading")}</p>
       </div>
     );
   }
@@ -85,12 +97,9 @@ function AnalysisHistory() {
   return (
     <main className="flex flex-1 overflow-y-auto bg-[var(--bg-main)] px-8 py-8 select-none lg:py-12 lg:pl-10">
       <div className="flex h-full w-full flex-col">
-        <h1 className="font-inter mb-2 text-xl font-bold">
-          Histórico de Análises
-        </h1>
+        <h1 className="font-inter mb-2 text-xl font-bold">{t("title")}</h1>
         <p className="font-inter mb-5 text-xs font-light text-gray-600">
-          Aqui você pode acessar todas as análises processadas e verificar
-          resultados e detalhes de cada análise.
+          {t("description")}
         </p>
 
         <SearchBar setSearchTerm={setSearchTerm} />
@@ -105,10 +114,12 @@ function AnalysisHistory() {
             <table className="w-full table-fixed border-collapse">
               <thead className="sticky top-0 z-10">
                 <tr>
-                  <th className={classesStyleTable}>Data</th>
-                  <th className={classesStyleTable}>Nome do projeto</th>
-                  <th className={classesStyleTable}>Status</th>
-                  <th className={classesStyleTable}>Ações</th>
+                  <th className={classesStyleTable}>{t("table.date")}</th>
+                  <th className={classesStyleTable}>
+                    {t("table.projectName")}
+                  </th>
+                  <th className={classesStyleTable}>{t("table.status")}</th>
+                  <th className={classesStyleTable}>{t("table.actions")}</th>
                 </tr>
               </thead>
               {filteredHistory.length === 0 && (
@@ -118,7 +129,7 @@ function AnalysisHistory() {
                       colSpan={4}
                       className="font-inter border-b border-gray-300 px-4 py-3 text-center text-xs"
                     >
-                      Nenhum resultado encontrado.
+                      {t("noResults")}
                     </td>
                   </tr>
                 </tbody>
@@ -140,7 +151,7 @@ function AnalysisHistory() {
                             statusClasses[analysis.status]
                           }
                         >
-                          {analysis.status}
+                          {displayStatus(analysis.status)}
                         </span>
                       </td>
                       <td className="border-b border-gray-300 px-4 py-3">
@@ -149,14 +160,14 @@ function AnalysisHistory() {
                             className="font-inter text-textPrimary cursor-pointer border-none bg-transparent px-0 py-1 text-xs hover:underline"
                             onClick={() => showResults(analysis)}
                           >
-                            Ver resultados
+                            {t("actions.viewResults")}
                           </button>
                         ) : analysis.status === "Erro" ? (
                           <button
                             className="font-inter text-textPrimary cursor-pointer border-none bg-transparent px-0 py-1 text-xs hover:underline"
                             onClick={() => showDetails(analysis)}
                           >
-                            Ver detalhes
+                            {t("actions.viewDetails")}
                           </button>
                         ) : null}
                       </td>
