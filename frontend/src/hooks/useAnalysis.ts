@@ -58,7 +58,7 @@ export function useAnalysis() {
     setProgress(0);
 
     try {
-      const progressInterval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setProgress((prev) => Math.min(prev + 5, 90));
       }, 200);
 
@@ -67,7 +67,10 @@ export function useAnalysis() {
         processTimGalore(files, files.directory?.directory || undefined),
       ]);
 
-      clearInterval(progressInterval);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
 
       setProgress(100);
       setIsRunning(false);
@@ -76,7 +79,10 @@ export function useAnalysis() {
 
       return { fastqResult, trimGaloreResult };
     } catch (error) {
-      clearInterval(intervalRef.current!);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
       setIsRunning(false);
       setProgress(0);
 
@@ -94,7 +100,10 @@ export function useAnalysis() {
 
   useEffect(() => {
     return () => {
-      clearInterval(intervalRef.current!);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
   }, []);
 
