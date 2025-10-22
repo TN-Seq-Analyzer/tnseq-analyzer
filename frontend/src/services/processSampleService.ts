@@ -1,65 +1,186 @@
 import type { FileData } from "@/types/index";
 
-export type ProcessResult = any;
+export type JobResponse = { job_id: string };
 
-const BASE_URL = "http://127.0.0.1:5000";
+const HTTP_BASE_URL = "http://localhost:5000";
+const WS_BASE_URL = "ws://localhost:5000";
 
-export async function processFastq(
+type JobOptions = {
+  trimming: { trimmer: string };
+  alignment: { index_prefix: string };
+};
+
+function buildInputFiles(files: FileData): string[] {
+  console.log(files, "filessssssssssssssssssssssssss");
+  const paths: Array<string | null | undefined> = [
+    (files as any)?.fastq?.path,
+    (files as any)?.fasta?.path,
+  ];
+  return paths.filter((p): p is string => Boolean(p));
+}
+
+function getExtension(path: string): string {
+  const parts = path.split(/[/\\]/).pop() || "";
+  const segs = parts.split(".");
+  if (segs.length <= 1) return "";
+  return segs.slice(1).join(".").toLowerCase();
+}
+
+function validateInputFiles(inputFiles: string[]) {
+  const map: Record<string, number> = {};
+  for (const p of inputFiles) {
+    const ext = getExtension(p);
+    let fileType: "read" | "ref" | null = null;
+    if (["fq", "fq.gz", "fastq", "fastq.gz"].includes(ext)) fileType = "read";
+    if (["fa", "fna", "fasta"].includes(ext)) fileType = fileType ?? "ref";
+    if (!fileType) {
+      throw new Error(`Arquivo com extensão inválida: ${p}`);
+    }
+    map[fileType] = (map[fileType] || 0) + 1;
+  }
+  const reads = map["read"] || 0;
+  const refs = map["ref"] || 0;
+  if (reads < 1 || refs !== 1) {
+    throw new Error(
+      "A combinação de arquivos não é suportada. Selecione ao menos 1 FASTQ e exatamente 1 FASTA.",
+    );
+  }
+}
+
+export async function createJob(
   files: FileData,
-  adapter: string,
-  outputDir?: string,
-) {
-  if (!files.fastq.content || !files.fastq.name) {
-    throw new Error("Fastq file not provided");
+  options?: Partial<JobOptions>,
+): Promise<JobResponse> {
+  const inputFiles = buildInputFiles(files);
+  if (inputFiles.length === 0) {
+    throw new Error("Nenhum caminho de arquivo foi informado");
   }
 
-  const formData = new FormData();
-  const blob = new Blob([files.fastq.content], { type: "text/plain" });
-  formData.append("file", blob, files.fastq.name);
-  formData.append("adapter", adapter);
-  if (outputDir) {
-    formData.append("output_dir", outputDir);
-  }
-  console.log("Output dir:", outputDir);
+  validateInputFiles(inputFiles);
+  console.log("executado");
 
-  const response = await fetch(`${BASE_URL}/process-fastq`, {
+  const outputDir = files.directory?.directory;
+  if (!outputDir) {
+    throw new Error("Diretório de saída não informado");
+  }
+
+  const body = {
+    input_files: inputFiles,
+    output_dir: outputDir,
+    options: {
+      trimming: { trimmer: options?.trimming?.trimmer ?? "trim_galore" },
+      alignment: { index_prefix: options?.alignment?.index_prefix ?? "index" },
+    },
+  };
+
+  try {
+    console.debug("[HTTP] POST /jobs payload:", body);
+  } catch {}
+
+  const response = await fetch(`${HTTP_BASE_URL}/jobs`, {
     method: "POST",
-    body: formData,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail);
+    let detail = "";
+    try {
+      const text = await response.clone().text();
+      console.debug("[HTTP] /jobs failed:", response.status, text);
+    } catch {}
+    try {
+      const asJson = await response.json();
+      detail = asJson?.detail || JSON.stringify(asJson);
+    } catch {
+      try {
+        detail = await response.text();
+      } catch {
+        detail = "Erro ao criar job";
+      }
+    }
+    throw new Error(`[${response.status}] ${detail || "Falha ao criar job"}`);
   }
 
-  const result = await response.json();
-
+  const result = (await response.json()) as JobResponse;
   return result;
 }
 
-export async function processTimGalore(files: FileData, outputDir?: string) {
-  if (!files.fastq.content || !files.fastq.name) {
-    throw new Error("Fastq file not provided");
-  }
+export type JobStreamResult = {
+  jobId: string;
+  messages: string[];
+};
 
-  const formData = new FormData();
-  const blob = new Blob([files.fastq.content], { type: "text/plain" });
-  formData.append("file", blob, files.fastq.name);
-  if (outputDir) {
-    formData.append("output_dir", outputDir);
-  }
+export async function startJobAndStream(
+  files: FileData,
+  options?: Partial<JobOptions>,
+  onMessage?: (msg: string) => void,
+  signal?: AbortSignal,
+): Promise<JobStreamResult> {
+  const { job_id } = await createJob(files, options);
 
-  const response = await fetch(`${BASE_URL}/process-trimgalore`, {
-    method: "POST",
-    body: formData,
+  return new Promise<JobStreamResult>((resolve, reject) => {
+    const ws = new WebSocket(`${WS_BASE_URL}/jobs/${job_id}`);
+    const messages: string[] = [];
+    let settled = false;
+    const safeResolve = (v: JobStreamResult) => {
+      if (settled) return;
+      settled = true;
+      resolve(v);
+    };
+    const safeReject = (e: any) => {
+      if (settled) return;
+      settled = true;
+      reject(e);
+    };
+
+    ws.onopen = () => {
+      console.log(`[WS] Conexão aberta para job ${job_id}`);
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const maybeObj = JSON.parse(event.data);
+        const text =
+          typeof maybeObj === "string" ? maybeObj : JSON.stringify(maybeObj);
+        messages.push(text);
+        console.log(`[WS][${job_id}]`, text);
+        onMessage?.(text);
+      } catch {
+        messages.push(String(event.data));
+        console.log(`[WS][${job_id}]`, String(event.data));
+        onMessage?.(String(event.data));
+      }
+    };
+
+    ws.onerror = (err) => {
+      console.error(`[WS] Erro no job ${job_id}:`, err);
+      safeReject(new Error("Erro na conexão WebSocket"));
+    };
+
+    ws.onclose = () => {
+      console.log(`[WS] Conexão encerrada para job ${job_id}`);
+      safeResolve({ jobId: job_id, messages });
+    };
+
+    if (signal) {
+      const onAbort = () => {
+        console.warn(
+          `[WS] Cancelando job ${job_id} por solicitação do usuário`,
+        );
+        try {
+          ws.onopen = null as any;
+          ws.onmessage = null as any;
+          ws.onerror = null as any;
+          ws.close(1000, "Cancelled by user");
+        } catch {}
+        safeReject(new Error("ABORTED"));
+      };
+      if (signal.aborted) {
+        onAbort();
+      } else {
+        signal.addEventListener("abort", onAbort, { once: true });
+      }
+    }
   });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail);
-  }
-
-  const result = await response.json();
-
-  return result;
 }

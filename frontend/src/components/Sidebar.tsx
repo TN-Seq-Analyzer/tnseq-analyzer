@@ -10,7 +10,7 @@ const Sidebar: React.FC = () => {
   });
   const location = useLocation();
   return (
-    <aside className="flex w-25/100 border-r-[1px] border-[var(--color-divider)] p-4 lg:w-2/10 lg:px-10 lg:py-7">
+    <aside className="flex min-w-[250px] shrink-0 border-r-[1px] border-[var(--color-divider)] p-4 lg:px-10 lg:py-7">
       <div className="flex h-full w-full flex-col">
         <div className="flex flex-col space-y-1">
           <SidebarItem

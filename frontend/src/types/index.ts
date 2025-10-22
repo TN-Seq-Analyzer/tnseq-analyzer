@@ -1,12 +1,21 @@
+export interface FileDataFileField {
+  name: string | null;
+  content: string | null;
+  path?: string | null;
+}
+
 export interface FileData {
   projectName: string;
-  fastq: { name: string | null; content: string | null };
-  fasta: { name: string | null; content: string | null };
-  gff: { name: string | null; content: string | null };
+  fastq: FileDataFileField;
+  fasta: FileDataFileField;
+  gff: FileDataFileField;
   directory: { directory: string | null };
   transpFile: string;
   idFile: string;
   advancedParams: AdvancedParams;
+  pipelineLogs?: PipelineLogEntry[];
+  analysisResult?: any;
+  lastProgress?: number;
 }
 
 export interface AdvancedParams {
@@ -27,3 +36,12 @@ export interface FileDialogResult {
   filePath: string;
   fileContent?: string;
 }
+
+export type PipelineLogEntry = {
+  timestamp: string;
+  step: string;
+  level: "INFO" | "ERROR" | "WARN" | "STDERR";
+  text: string;
+  progress?: number;
+  success?: boolean;
+};

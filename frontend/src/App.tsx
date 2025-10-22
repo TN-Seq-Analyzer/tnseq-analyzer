@@ -9,7 +9,7 @@ function App() {
     <>
       <div className="flex h-screen w-full flex-col">
         <Header />
-        <div className="flex h-[calc(100vh-48px)] w-full flex-1">
+        <div className="flex h-[calc(100vh-48px)]">
           <Sidebar />
           <AnalysisProvider>
             <RouterLayout />

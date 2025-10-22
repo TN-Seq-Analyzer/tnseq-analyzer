@@ -17,7 +17,7 @@ registerHandlers();
 
 const startBackend = () => {
   const script = path.join(__dirname, "../../../backend/main.py");
-  pythonProcess = spawn("cd ../backend && uv run main.py" , { shell: true });
+  pythonProcess = spawn("cd ../backend && uv run main.py", { shell: true });
 
   pythonProcess.stdout.on("data", (data) => {
     console.log(`Python: ${data}`);
@@ -36,7 +36,7 @@ const startBackend = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-  startBackend();
+  // startBackend();
   createWindow();
 });
 
